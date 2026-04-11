@@ -1,7 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Flashlight() {
   const [isOn, setIsOn] = useState(false);
+  const trackRef = useRef<MediaStreamTrack | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Clean up track on unmount
+      if (trackRef.current) {
+        trackRef.current.stop();
+      }
+    };
+  }, []);
 
   const toggleFlashlight = async () => {
     try {
@@ -9,12 +19,18 @@ export default function Flashlight() {
         // Request access to torch/flashlight
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
         const track = stream.getVideoTracks()[0];
-        // @ts-ignore
+        // @ts-expect-error Torch constraints exist in some browsers
         await track.applyConstraints({ advanced: [{ torch: true }] });
+        trackRef.current = track;
         setIsOn(true);
       } else {
-        // Turn off logic would require persistent track reference
-        alert('Flashlight control active - manual hardware toggle required to turn off in this browser');
+        if (trackRef.current) {
+          // @ts-expect-error Turn off torch
+          await trackRef.current.applyConstraints({ advanced: [{ torch: false }] }).catch(() => {});
+          trackRef.current.stop();
+          trackRef.current = null;
+        }
+        setIsOn(false);
       }
     } catch (err) {
       alert('Flashlight not accessible or unsupported on this device.');

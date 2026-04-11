@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 
 export default function Ruler() {
   const [ppi, setPpi] = useState(96);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const div = document.createElement('div');
     div.style.width = '1in';
+    div.style.visibility = 'hidden';
+    div.style.position = 'absolute';
     document.body.appendChild(div);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPpi(div.offsetWidth);
     document.body.removeChild(div);
   }, []);
