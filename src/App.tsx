@@ -170,7 +170,6 @@ const toolComponents: Record<string, React.ReactNode> = {
   "Torque Calculator": <TorqueCalculator />,
   "Gemini Assistant": <GeminiAssistant />,
 };
-};
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('Electrical');
