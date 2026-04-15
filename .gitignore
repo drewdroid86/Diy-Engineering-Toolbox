@@ -6,7 +6,3 @@ coverage/
 *.log
 .env*
 !.env.example
-
-# gemini-cli
-.gemini/
-gha-creds-*.json
