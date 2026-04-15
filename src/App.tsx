@@ -154,8 +154,15 @@ const TorqueCalculator = () => {
   const [result, setResult] = useState<number | null>(null);
 
   const calculate = () => {
-    const rad = (parseFloat(angle) * Math.PI) / 180;
-    setResult(parseFloat(force) * parseFloat(distance) * Math.sin(rad));
+    const f = parseFloat(force);
+    const d = parseFloat(distance);
+    const a = parseFloat(angle);
+    if (isNaN(f) || isNaN(d) || isNaN(a)) {
+      setResult(null);
+      return;
+    }
+    const rad = (a * Math.PI) / 180;
+    setResult(f * d * Math.sin(rad));
   };
 
   return (
@@ -189,9 +196,16 @@ const OhmsLawCalculator = () => {
   const [r, setR] = useState('');
 
   const calculate = (changed: 'v' | 'i' | 'r', val: string) => {
-    const vNum = changed === 'v' ? parseFloat(val) : parseFloat(v);
-    const iNum = changed === 'i' ? parseFloat(val) : parseFloat(i);
-    const rNum = changed === 'r' ? parseFloat(val) : parseFloat(r);
+    const numVal = parseFloat(val);
+    if (isNaN(numVal)) {
+      if (changed === 'v') setV(val);
+      else if (changed === 'i') setI(val);
+      else if (changed === 'r') setR(val);
+      return;
+    }
+    const vNum = changed === 'v' ? numVal : parseFloat(v);
+    const iNum = changed === 'i' ? numVal : parseFloat(i);
+    const rNum = changed === 'r' ? numVal : parseFloat(r);
 
     if (changed === 'v') {
       setV(val);
@@ -199,11 +213,11 @@ const OhmsLawCalculator = () => {
       else if (!isNaN(rNum) && rNum !== 0) setI((vNum / rNum).toString());
     } else if (changed === 'i') {
       setI(val);
-      if (!isNaN(vNum)) setR((vNum / iNum).toString());
+      if (!isNaN(vNum) && iNum !== 0) setR((vNum / iNum).toString());
       else if (!isNaN(rNum)) setV((iNum * rNum).toString());
     } else if (changed === 'r') {
       setR(val);
-      if (!isNaN(vNum)) setI((vNum / rNum).toString());
+      if (!isNaN(vNum) && rNum !== 0) setI((vNum / rNum).toString());
       else if (!isNaN(iNum)) setV((iNum * rNum).toString());
     }
   };
