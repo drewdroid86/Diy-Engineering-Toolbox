@@ -189,28 +189,52 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen font-sans bg-background text-text">
-      <header className="p-6 border-b border-border flex justify-between items-center bg-card">
-        <h1 className="text-2xl font-bold tracking-tight">Engineer's Toolbox</h1>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-            <input type="text" placeholder="Search tools..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-2 rounded-full bg-input focus:outline-none focus:ring-2 focus:ring-ring border border-border" />
+    <div className="relative min-h-screen font-sans text-white overflow-x-hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_34%),radial-gradient(circle_at_80%_10%,rgba(56,189,248,0.16),transparent_30%)] blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-48 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-gradient-to-br from-cyan-500/20 via-indigo-500/10 to-transparent opacity-70" />
+      <header className="relative z-10 p-8 bg-slate-950/70 border-b border-slate-800 backdrop-blur-xl shadow-[0_25px_100px_rgba(15,23,42,0.35)]">
+        <div className="max-w-6xl mx-auto flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Engineer's Toolbox</h1>
+            <p className="mt-4 max-w-2xl text-slate-300 text-sm sm:text-base">A playful engineering workspace with tools, formulas, and AI-powered help that feels interactive and alive.</p>
           </div>
-          <button className="p-2 rounded-full hover:bg-muted"><Settings className="w-5 h-5" /></button>
-          <button className="p-2 rounded-full hover:bg-muted"><Info className="w-5 h-5" /></button>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="relative w-full sm:w-[320px]">
+              <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+              <input type="text" placeholder="Search tools..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-3 rounded-full bg-slate-900/90 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 border border-slate-700" />
+            </div>
+            <button className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/85 px-4 py-3 text-slate-200 transition hover:border-cyan-400 hover:text-white">Settings</button>
+            <button className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/85 px-4 py-3 text-slate-200 transition hover:border-cyan-400 hover:text-white">Info</button>
+          </div>
+        </div>
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl">
+            <p className="text-sm uppercase tracking-[0.2em] text-cyan-300/80">Instant calculations</p>
+            <h2 className="mt-4 text-2xl font-semibold text-white">Fast tool switching</h2>
+            <p className="mt-3 text-slate-400">Jump between electrical, civil, and mechanical solvers with a single click.</p>
+          </div>
+          <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl">
+            <p className="text-sm uppercase tracking-[0.2em] text-cyan-300/80">AI guidance</p>
+            <h2 className="mt-4 text-2xl font-semibold text-white">Gemini-powered help</h2>
+            <p className="mt-3 text-slate-400">Ask questions, get formulas, and verify designs without leaving the app.</p>
+          </div>
+          <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl">
+            <p className="text-sm uppercase tracking-[0.2em] text-cyan-300/80">Modern UI</p>
+            <h2 className="mt-4 text-2xl font-semibold text-white">Interactive dashboard</h2>
+            <p className="mt-3 text-slate-400">Sleek layouts, hover motion, and responsive components give it a polished feel.</p>
+          </div>
         </div>
       </header>
 
       <div className="flex">
-        <nav className="w-64 p-6 border-r border-border h-[calc(100vh-89px)] overflow-y-auto sticky top-[89px]">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4 tracking-wider">Frequently Used</h3>
-          <ul className="space-y-2 mb-8">
+        <nav className="w-72 p-6 border-r border-slate-800 h-[calc(100vh-96px)] overflow-y-auto sticky top-[96px] bg-slate-950/70 backdrop-blur-xl shadow-lg">
+          <h3 className="text-sm font-semibold text-slate-400 uppercase mb-4 tracking-wider">Frequently Used</h3>
+          <ul className="space-y-3 mb-8">
             {pinnedTools.map(tool => (
               <li key={tool}>
                 <button 
                   onClick={() => setSelectedTool(tool)}
-                  className="w-full text-left text-sm font-medium p-3 bg-card border border-border rounded-lg hover:border-accent transition"
+                  className="w-full text-left text-sm font-semibold p-3 bg-slate-900/75 border border-slate-800 rounded-3xl shadow-sm transition hover:border-cyan-400/50 hover:bg-slate-900/95"
                 >
                   {tool}
                 </button>
@@ -241,14 +265,43 @@ export default function App() {
                 <div className="w-2 h-6 bg-accent rounded-full" />
                 {selectedCategory} Tools
               </h2>
+              <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr] mb-12">
+                <div className="card-3d rounded-[32px] border border-slate-800 bg-slate-900/85 p-8 shadow-[0_35px_80px_rgba(15,23,42,0.35)]">
+                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">Interactive launchpad</p>
+                  <h2 className="mt-5 text-3xl font-semibold text-white">Try the toolbox in one click</h2>
+                  <p className="mt-4 text-slate-400 leading-relaxed">Pick a tool, explore formulas, or ask Gemini anything. The interface responds instantly with hover motion and clear category navigation.</p>
+                  <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                    {['Ohm\'s Law', 'Torque Calculator', 'Gemini Assistant'].map((tool) => (
+                      <button key={tool} onClick={() => setSelectedTool(tool)} className="rounded-3xl border border-slate-700/70 bg-slate-950/80 px-4 py-3 text-sm font-semibold text-white transition hover:border-cyan-400 hover:bg-slate-900">{tool}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/85 p-8 shadow-[0_35px_80px_rgba(15,23,42,0.25)]">
+                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">Experience</p>
+                  <div className="mt-6 space-y-4">
+                    <div className="rounded-3xl border border-slate-700/60 bg-slate-950/80 p-5">
+                      <p className="text-sm text-slate-400">Live navigation between categories</p>
+                      <p className="mt-2 text-lg font-semibold text-white">Electrical, Mechanical, Civil, and AI tools in one place.</p>
+                    </div>
+                    <div className="rounded-3xl border border-slate-700/60 bg-slate-950/80 p-5">
+                      <p className="text-sm text-slate-400">Hover animations and depth</p>
+                      <p className="mt-2 text-lg font-semibold text-white">Cards respond with tilt, glow, and smooth motion.</p>
+                    </div>
+                    <div className="rounded-3xl border border-slate-700/60 bg-slate-950/80 p-5">
+                      <p className="text-sm text-slate-400">AI assistance built in</p>
+                      <p className="mt-2 text-lg font-semibold text-white">Ask questions directly in the app for instant engineering support.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {TOOLS[selectedCategory].filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase())).map((tool) => (
-                  <div key={tool.name} className="bg-card text-card-foreground p-6 rounded-xl shadow-lg border border-border hover:border-accent transition cursor-pointer relative group">
-                    <button onClick={() => togglePin(tool.name)} className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition"><Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400 text-yellow-400 opacity-100' : 'text-muted-foreground'}`} /></button>
+                  <div key={tool.name} className="card-3d bg-slate-900/80 text-card-foreground p-6 rounded-[28px] shadow-2xl border border-slate-700/70 hover:border-cyan-400/40 transition-transform duration-500 cursor-pointer relative group">
+                    <button onClick={() => togglePin(tool.name)} className="absolute top-3 right-3 p-2 opacity-0 group-hover:opacity-100 transition"><Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400 text-yellow-400 opacity-100' : 'text-slate-400'}`} /></button>
                     <div onClick={() => setSelectedTool(tool.name)}>
-                      <div className="mb-4 text-accent bg-accent/10 w-12 h-12 flex items-center justify-center rounded-lg">{tool.icon}</div>
-                      <h3 className="text-lg font-medium group-hover:text-accent transition">{tool.name}</h3>
-                      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{tool.description}</p>
+                      <div className="mb-4 text-cyan-300 bg-cyan-500/10 w-14 h-14 flex items-center justify-center rounded-3xl shadow-inner shadow-cyan-500/10">{tool.icon}</div>
+                      <h3 className="text-xl font-semibold group-hover:text-cyan-300 transition">{tool.name}</h3>
+                      <p className="text-sm text-slate-400 mt-3 leading-relaxed">{tool.description}</p>
                     </div>
                   </div>
                 ))}
@@ -262,9 +315,9 @@ export default function App() {
                 {(searchQuery ? Object.values(FORMULAS).flat() : FORMULAS[selectedCategory])
                   .filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
                   .map(f => (
-                    <div key={f.name} className="bg-card/50 text-card-foreground p-6 rounded-xl shadow-sm border border-border">
-                      <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-2">{f.name}</h4>
-                      <p className="font-mono text-lg text-accent">{f.formula}</p>
+                    <div key={f.name} className="card-3d bg-slate-900/60 text-card-foreground p-6 rounded-[24px] shadow-xl border border-slate-700/50">
+                      <h4 className="font-semibold text-sm uppercase tracking-wider text-slate-400 mb-2">{f.name}</h4>
+                      <p className="font-mono text-lg text-cyan-300">{f.formula}</p>
                     </div>
                   ))}
               </div>
