@@ -52,33 +52,41 @@ const GeminiAssistant = () => {
   };
 
   return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border flex flex-col h-[600px]">
-      <h3 className="text-2xl font-bold mb-6">Gemini Engineering Assistant</h3>
-      <div className="flex-1 overflow-y-auto mb-6 space-y-4 pr-2">
-        {messages.map((m, i) => (
-          <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-accent/20 border border-accent/30 ml-8' : 'bg-muted border border-border mr-8'}`}>
-            <p className="font-bold mb-1 text-xs uppercase tracking-widest text-accent">{m.role === 'user' ? 'You' : 'Gemini'}</p>
-            <p className="text-sm whitespace-pre-wrap">{m.content}</p>
-          </div>
-        ))}
-        {loading && <p className="text-muted-foreground italic animate-pulse">Gemini is thinking...</p>}
+    <div className="flex flex-col h-full bg-white rounded-2xl shadow-lg border border-gray-200">
+      <div className="p-8 border-b border-gray-200">
+        <h2 className="text-3xl font-bold text-gray-900">Gemini Assistant</h2>
+        <p className="text-gray-600 mt-2">Ask any engineering question</p>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-8 space-y-4">
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground">
-            <MessageSquare className="w-12 h-12 mb-4 opacity-20" />
-            <p>Ask anything about formulas, materials, or engineering concepts.</p>
+          <div className="h-full flex flex-col items-center justify-center text-center text-gray-400">
+            <MessageSquare className="w-16 h-16 mb-4 opacity-30" />
+            <p className="text-lg">No messages yet. Ask a question to get started.</p>
           </div>
         )}
+        {messages.map((m, i) => (
+          <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-xl p-4 rounded-lg ${m.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'}`}>
+              <p className="text-sm whitespace-pre-wrap">{m.content}</p>
+            </div>
+          </div>
+        ))}
+        {loading && <p className="text-gray-500 italic animate-pulse">Gemini is thinking...</p>}
       </div>
-      <div className="flex gap-4">
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Ask an engineering question..." 
-          className="flex-1 p-3 bg-input text-foreground rounded-lg focus:outline-none border border-border focus:border-accent" 
-        />
-        <button onClick={sendMessage} disabled={loading} className="bg-accent hover:bg-accent/80 text-accent-foreground font-bold py-3 px-6 rounded-lg transition disabled:opacity-50">Send</button>
+
+      <div className="p-8 border-t border-gray-200">
+        <div className="flex gap-3">
+          <input 
+            type="text" 
+            value={input} 
+            onChange={(e) => setInput(e.target.value)} 
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Ask an engineering question..." 
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button onClick={sendMessage} disabled={loading} className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50">Send</button>
+        </div>
       </div>
     </div>
   );
@@ -103,29 +111,35 @@ const TorqueCalculator = () => {
   };
 
   return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
-      <h3 className="text-2xl font-bold mb-6">Torque Calculator</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div>
-          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Force (N)</label>
-          <input type="number" value={force} onChange={(e) => setForce(e.target.value)} placeholder="Force (N)" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Distance (m)</label>
-          <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="Distance (m)" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Angle (deg)</label>
-          <input type="number" value={angle} onChange={(e) => setAngle(e.target.value)} placeholder="90" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
-        </div>
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
+      <div className="p-8 border-b border-gray-200">
+        <h2 className="text-3xl font-bold text-gray-900">Torque Calculator</h2>
+        <p className="text-gray-600 mt-2">Calculate torque from force, distance, and angle</p>
       </div>
-      <button onClick={calculate} className="bg-accent hover:bg-accent/80 text-accent-foreground font-bold py-3 px-6 rounded-lg transition w-full">Calculate</button>
-      {result !== null && (
-        <div className="mt-8 p-6 bg-accent/10 border border-accent/20 rounded-xl text-center">
-          <p className="text-sm font-medium text-accent uppercase tracking-widest mb-1">Calculated Torque</p>
-          <p className="text-4xl font-bold">{result.toFixed(2)} Nm</p>
+
+      <div className="p-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Force (N)</label>
+            <input type="number" value={force} onChange={(e) => setForce(e.target.value)} placeholder="Enter force" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Distance (m)</label>
+            <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="Enter distance" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Angle (°)</label>
+            <input type="number" value={angle} onChange={(e) => setAngle(e.target.value)} placeholder="90" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
         </div>
-      )}
+        <button onClick={calculate} className="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">Calculate</button>
+        {result !== null && (
+          <div className="mt-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+            <p className="text-sm text-gray-600 font-semibold uppercase">Torque</p>
+            <p className="text-4xl font-bold text-blue-600 mt-2">{result.toFixed(2)} Nm</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -144,159 +158,173 @@ const toolComponents: Record<string, React.ReactNode> = {
 };
 
 export default function App() {
-  const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('Electrical');
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
-  const [pinnedTools, setPinnedTools] = useState<string[]>(["Ohm's Law"]);
+  const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [pinnedTools, setPinnedTools] = useState<string[]>(["Ohm's Law"]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const togglePin = (toolName: string) => {
     setPinnedTools(prev => prev.includes(toolName) ? prev.filter(t => t !== toolName) : [...prev, toolName]);
   };
 
-  const renderTool = () => {
-    if (selectedTool && toolComponents[selectedTool]) {
-      return toolComponents[selectedTool];
-    }
-    return <p className="text-muted-foreground">Select a tool to begin.</p>;
-  };
+  const filteredTools = useMemo(() => {
+    return ALL_TOOLS.filter(tool => {
+      const matchesCategory = selectedCategory === 'All' || tool.category === selectedCategory;
+      const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           tool.description.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchQuery]);
+
+  const categories: ToolCategory[] = ['All', 'Electrical', 'Mechanical', 'Civil', 'General', 'AI Assistant'];
+
+  if (selectedTool && toolComponents[selectedTool]) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <button 
+              onClick={() => setSelectedTool(null)}
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back to Tools
+            </button>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {toolComponents[selectedTool]}
+        </main>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative min-h-screen font-sans text-white overflow-x-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_34%),radial-gradient(circle_at_80%_10%,rgba(56,189,248,0.16),transparent_30%)] blur-3xl" />
-      <div className="pointer-events-none absolute left-1/2 top-48 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-gradient-to-br from-cyan-500/20 via-indigo-500/10 to-transparent opacity-70" />
-      <header className="relative z-10 p-8 bg-slate-950/70 border-b border-slate-800 backdrop-blur-xl shadow-[0_25px_100px_rgba(15,23,42,0.35)]">
-        <div className="max-w-6xl mx-auto flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Engineer's Toolbox</h1>
-            <p className="mt-4 max-w-2xl text-slate-300 text-sm sm:text-base">A playful engineering workspace with tools, formulas, and AI-powered help that feels interactive and alive.</p>
-          </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative w-full sm:w-[320px]">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-              <input type="text" placeholder="Search tools..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-3 rounded-full bg-slate-900/90 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 border border-slate-700" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-6 flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Engineer's Toolbox</h1>
+              <p className="text-gray-600 mt-1">Quick calculations for electrical, mechanical, and civil engineering</p>
             </div>
-            <button className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/85 px-4 py-3 text-slate-200 transition hover:border-cyan-400 hover:text-white">Settings</button>
-            <button className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/85 px-4 py-3 text-slate-200 transition hover:border-cyan-400 hover:text-white">Info</button>
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
-        </div>
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl">
-            <p className="text-sm uppercase tracking-[0.2em] text-cyan-300/80">Instant calculations</p>
-            <h2 className="mt-4 text-2xl font-semibold text-white">Fast tool switching</h2>
-            <p className="mt-3 text-slate-400">Jump between electrical, civil, and mechanical solvers with a single click.</p>
+
+          {/* Search Bar */}
+          <div className="pb-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Search tools..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           </div>
-          <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl">
-            <p className="text-sm uppercase tracking-[0.2em] text-cyan-300/80">AI guidance</p>
-            <h2 className="mt-4 text-2xl font-semibold text-white">Gemini-powered help</h2>
-            <p className="mt-3 text-slate-400">Ask questions, get formulas, and verify designs without leaving the app.</p>
-          </div>
-          <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl">
-            <p className="text-sm uppercase tracking-[0.2em] text-cyan-300/80">Modern UI</p>
-            <h2 className="mt-4 text-2xl font-semibold text-white">Interactive dashboard</h2>
-            <p className="mt-3 text-slate-400">Sleek layouts, hover motion, and responsive components give it a polished feel.</p>
+
+          {/* Category Filters */}
+          <div className={`pb-6 flex flex-wrap gap-2 ${mobileMenuOpen ? 'block' : 'hidden lg:flex'}`}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => { setSelectedCategory(cat); setMobileMenuOpen(false); }}
+                className={`px-4 py-2 rounded-full font-medium transition ${
+                  selectedCategory === cat 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
         </div>
       </header>
 
-      <div className="flex">
-        <nav className="w-72 p-6 border-r border-slate-800 h-[calc(100vh-96px)] overflow-y-auto sticky top-[96px] bg-slate-950/70 backdrop-blur-xl shadow-lg">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase mb-4 tracking-wider">Frequently Used</h3>
-          <ul className="space-y-3 mb-8">
-            {pinnedTools.map(tool => (
-              <li key={tool}>
-                <button 
-                  onClick={() => setSelectedTool(tool)}
-                  className="w-full text-left text-sm font-semibold p-3 bg-slate-900/75 border border-slate-800 rounded-3xl shadow-sm transition hover:border-cyan-400/50 hover:bg-slate-900/95"
-                >
-                  {tool}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4 tracking-wider">Categories</h3>
-          <ul className="space-y-2">
-            {(Object.keys(TOOLS) as ToolCategory[]).map((category) => (
-              <li key={category}>
-                <button onClick={() => { setSelectedCategory(category); setSelectedTool(null); }} className={`w-full text-left p-3 rounded-lg font-medium transition ${selectedCategory === category ? 'bg-accent text-accent-foreground' : 'hover:bg-muted'}`}>{category}</button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {pinnedTools.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Favorites</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {pinnedTools.map(toolName => {
+                const tool = ALL_TOOLS.find(t => t.name === toolName);
+                return tool ? (
+                  <div
+                    key={tool.name}
+                    onClick={() => setSelectedTool(tool.name)}
+                    className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition cursor-pointer group"
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="text-blue-500 bg-blue-50 p-3 rounded-lg group-hover:bg-blue-100 transition">
+                        {tool.icon}
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); togglePin(tool.name); }}
+                        className="text-yellow-400"
+                      >
+                        <Star className="w-5 h-5 fill-yellow-400" />
+                      </button>
+                    </div>
+                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition">{tool.name}</h3>
+                    <p className="text-sm text-gray-600 mt-2">{tool.description}</p>
+                  </div>
+                ) : null;
+              })}
+            </div>
+          </section>
+        )}
 
-        <main className="flex-1 p-8">
-          {selectedTool ? (
-            <div>
-              <button onClick={() => setSelectedTool(null)} className="flex items-center gap-2 text-muted-foreground hover:text-text mb-6 transition"><ArrowLeft className="w-4 h-4" /> Back to Toolbox</button>
-              <div className="max-w-4xl mx-auto">
-                {renderTool()}
-              </div>
+        {/* Tools Grid */}
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            {searchQuery ? `Search Results (${filteredTools.length})` : 'All Tools'}
+          </h2>
+          {filteredTools.length === 0 ? (
+            <div className="text-center py-12">
+              <Calculator className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg">No tools found matching your search.</p>
             </div>
           ) : (
-            <>
-              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                <div className="w-2 h-6 bg-accent rounded-full" />
-                {selectedCategory} Tools
-              </h2>
-              <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr] mb-12">
-                <div className="card-3d rounded-[32px] border border-slate-800 bg-slate-900/85 p-8 shadow-[0_35px_80px_rgba(15,23,42,0.35)]">
-                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">Interactive launchpad</p>
-                  <h2 className="mt-5 text-3xl font-semibold text-white">Try the toolbox in one click</h2>
-                  <p className="mt-4 text-slate-400 leading-relaxed">Pick a tool, explore formulas, or ask Gemini anything. The interface responds instantly with hover motion and clear category navigation.</p>
-                  <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                    {['Ohm\'s Law', 'Torque Calculator', 'Gemini Assistant'].map((tool) => (
-                      <button key={tool} onClick={() => setSelectedTool(tool)} className="rounded-3xl border border-slate-700/70 bg-slate-950/80 px-4 py-3 text-sm font-semibold text-white transition hover:border-cyan-400 hover:bg-slate-900">{tool}</button>
-                    ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTools.map((tool) => (
+                <div
+                  key={tool.name}
+                  onClick={() => setSelectedTool(tool.name)}
+                  className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg hover:border-blue-300 transition cursor-pointer group"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="text-blue-500 bg-blue-50 p-3 rounded-lg group-hover:bg-blue-100 transition">
+                      {tool.icon}
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); togglePin(tool.name); }}
+                      className={pinnedTools.includes(tool.name) ? 'text-yellow-400' : 'text-gray-300 hover:text-gray-400'}
+                    >
+                      <Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400' : ''}`} />
+                    </button>
                   </div>
+                  <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition">{tool.name}</h3>
+                  <p className="text-sm text-gray-600 mt-2">{tool.description}</p>
+                  <span className="inline-block mt-4 text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {tool.category}
+                  </span>
                 </div>
-                <div className="card-3d rounded-[28px] border border-slate-800 bg-slate-900/85 p-8 shadow-[0_35px_80px_rgba(15,23,42,0.25)]">
-                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">Experience</p>
-                  <div className="mt-6 space-y-4">
-                    <div className="rounded-3xl border border-slate-700/60 bg-slate-950/80 p-5">
-                      <p className="text-sm text-slate-400">Live navigation between categories</p>
-                      <p className="mt-2 text-lg font-semibold text-white">Electrical, Mechanical, Civil, and AI tools in one place.</p>
-                    </div>
-                    <div className="rounded-3xl border border-slate-700/60 bg-slate-950/80 p-5">
-                      <p className="text-sm text-slate-400">Hover animations and depth</p>
-                      <p className="mt-2 text-lg font-semibold text-white">Cards respond with tilt, glow, and smooth motion.</p>
-                    </div>
-                    <div className="rounded-3xl border border-slate-700/60 bg-slate-950/80 p-5">
-                      <p className="text-sm text-slate-400">AI assistance built in</p>
-                      <p className="mt-2 text-lg font-semibold text-white">Ask questions directly in the app for instant engineering support.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {TOOLS[selectedCategory].filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase())).map((tool) => (
-                  <div key={tool.name} className="card-3d bg-slate-900/80 text-card-foreground p-6 rounded-[28px] shadow-2xl border border-slate-700/70 hover:border-cyan-400/40 transition-transform duration-500 cursor-pointer relative group">
-                    <button onClick={() => togglePin(tool.name)} className="absolute top-3 right-3 p-2 opacity-0 group-hover:opacity-100 transition"><Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400 text-yellow-400 opacity-100' : 'text-slate-400'}`} /></button>
-                    <div onClick={() => setSelectedTool(tool.name)}>
-                      <div className="mb-4 text-cyan-300 bg-cyan-500/10 w-14 h-14 flex items-center justify-center rounded-3xl shadow-inner shadow-cyan-500/10">{tool.icon}</div>
-                      <h3 className="text-xl font-semibold group-hover:text-cyan-300 transition">{tool.name}</h3>
-                      <p className="text-sm text-slate-400 mt-3 leading-relaxed">{tool.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                <div className="w-2 h-6 bg-border rounded-full" />
-                Engineering Formulas
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(searchQuery ? Object.values(FORMULAS).flat() : FORMULAS[selectedCategory])
-                  .filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                  .map(f => (
-                    <div key={f.name} className="card-3d bg-slate-900/60 text-card-foreground p-6 rounded-[24px] shadow-xl border border-slate-700/50">
-                      <h4 className="font-semibold text-sm uppercase tracking-wider text-slate-400 mb-2">{f.name}</h4>
-                      <p className="font-mono text-lg text-cyan-300">{f.formula}</p>
-                    </div>
-                  ))}
-              </div>
-            </>
+              ))}
+            </div>
           )}
-        </main>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }
