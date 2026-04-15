@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search, Scale, Thermometer, Gauge } from 'lucide-react';
+import { callGemini } from './lib/gemini';
 
 type ToolCategory = 'Electrical' | 'Mechanical' | 'General' | 'Civil';
 
@@ -14,6 +15,7 @@ const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; descrip
     { name: 'Resistor Color Code', icon: <Zap className="w-5 h-5" />, description: 'Determine resistor values from color bands.' },
   ],
   Mechanical: [
+    { name: 'Torque Calculator', icon: <Ruler className="w-5 h-5" />, description: 'Calculate torque based on force and distance.' },
     { name: 'Torque Converter', icon: <Ruler className="w-5 h-5" />, description: 'Convert between different torque units.' },
   ],
   Civil: [],
@@ -38,6 +40,54 @@ export default function App() {
   const togglePin = (toolName: string) => {
     setPinnedTools(prev => prev.includes(toolName) ? prev.filter(t => t !== toolName) : [...prev, toolName]);
   };
+
+const GeminiAssistant = () => {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+    const newMessages = [...messages, { role: 'user', content: input }];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
+    try {
+      const reply = await callGemini(newMessages);
+      setMessages([...newMessages, { role: 'model', content: reply }]);
+    } catch (err: any) {
+      setMessages([...newMessages, { role: 'model', content: `Error: ${err.message}` }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20 flex flex-col h-[500px]">
+      <h3 className="text-2xl font-bold mb-6">Gemini Engineering Assistant</h3>
+      <div className="flex-1 overflow-y-auto mb-6 space-y-4">
+        {messages.map((m, i) => (
+          <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-[#FF4444]/20 border border-[#FF4444]/30' : 'bg-[#E6E6E6] text-[#151619]'}`}>
+            <p className="font-bold mb-1">{m.role === 'user' ? 'You' : 'Gemini'}</p>
+            <p className="text-sm whitespace-pre-wrap">{m.content}</p>
+          </div>
+        ))}
+        {loading && <p className="text-[#8E9299] italic">Thinking...</p>}
+      </div>
+      <div className="flex gap-4">
+        <input 
+          type="text" 
+          value={input} 
+          onChange={(e) => setInput(e.target.value)} 
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Ask an engineering question..." 
+          className="flex-1 p-3 bg-[#E6E6E6] text-[#151619] rounded-lg focus:outline-none" 
+        />
+        <button onClick={sendMessage} disabled={loading} className="bg-[#FF4444] hover:bg-[#FF4444]/80 text-white font-bold py-3 px-6 rounded-lg transition disabled:opacity-50">Send</button>
+      </div>
+    </div>
+  );
+};
 
 const ResistorColorCodeCalculator = () => {
   const [band1, setBand1] = useState(0);
@@ -93,6 +143,42 @@ const ResistorColorCodeCalculator = () => {
         </div>
       </div>
       <p className="text-2xl font-bold mt-8">Resistance: {resistance} Ω ±{tolerance}%</p>
+    </div>
+  );
+};
+
+const TorqueCalculator = () => {
+  const [force, setForce] = useState('');
+  const [distance, setDistance] = useState('');
+  const [angle, setAngle] = useState('90');
+  const [result, setResult] = useState<number | null>(null);
+
+  const calculate = () => {
+    const rad = (parseFloat(angle) * Math.PI) / 180;
+    setResult(parseFloat(force) * parseFloat(distance) * Math.sin(rad));
+  };
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">Torque Calculator</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div>
+          <label className="block text-[#8E9299] mb-2">Force (N)</label>
+          <input type="number" value={force} onChange={(e) => setForce(e.target.value)} placeholder="Force (N)" className="w-full p-3 bg-[#E6E6E6] text-[#151619] rounded-lg" />
+        </div>
+        <div>
+          <label className="block text-[#8E9299] mb-2">Distance (m)</label>
+          <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="Distance (m)" className="w-full p-3 bg-[#E6E6E6] text-[#151619] rounded-lg" />
+        </div>
+        <div>
+          <label className="block text-[#8E9299] mb-2">Angle (deg, default 90)</label>
+          <input type="number" value={angle} onChange={(e) => setAngle(e.target.value)} placeholder="Angle (deg, default 90)" className="w-full p-3 bg-[#E6E6E6] text-[#151619] rounded-lg" />
+        </div>
+      </div>
+      <button onClick={calculate} className="bg-[#FF4444] hover:bg-[#FF4444]/80 text-white font-bold py-3 px-6 rounded-lg transition">Calculate</button>
+      {result !== null && (
+        <p className="text-xl font-bold mt-6 text-white" aria-label="Calculated Result">Calculated Result: {result.toFixed(2)} Nm</p>
+      )}
     </div>
   );
 };
@@ -209,6 +295,10 @@ const UnitConverter = () => {
       return <ResistorColorCodeCalculator />;
     } else if (selectedTool === 'Unit Converter') {
       return <UnitConverter />;
+    } else if (selectedTool === 'Torque Calculator') {
+      return <TorqueCalculator />;
+    } else if (selectedTool === 'Gemini Assistant') {
+      return <GeminiAssistant />;
     }
     return <p className="text-[#8E9299]">Select a tool to begin.</p>;
   };
