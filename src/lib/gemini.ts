@@ -1,7 +1,6 @@
-import { GoogleGenerativeAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
-const genAI = new GoogleGenerativeAI((process.env as any).GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const genAI = new GoogleGenAI({ apiKey: (process.env as any).GEMINI_API_KEY || "" });
 
 export const callGemini = async (messages: { role: string; content: string }[], maxTokens: number = 512) => {
   if (!(process.env as any).GEMINI_API_KEY) {
@@ -13,12 +12,13 @@ export const callGemini = async (messages: { role: string; content: string }[], 
     parts: [{ text: m.content }]
   }));
   
-  const result = await model.generateContent({
+  const result = await genAI.models.generateContent({
+    model: "gemini-1.5-flash",
     contents,
-    generationConfig: {
+    config: {
       maxOutputTokens: maxTokens
     }
   });
   
-  return result.response.text();
+  return result.text;
 };
