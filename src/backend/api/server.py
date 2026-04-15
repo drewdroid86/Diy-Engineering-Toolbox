@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from router import route
 import json
+import shlex
 
 app = FastAPI(title="Crucible API")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -34,7 +35,8 @@ def status():
     models = []
     try:
         import subprocess
-        out = subprocess.check_output("find /storage/emulated/0/models -name '*.gguf' 2>/dev/null", shell=True).decode()
+        cmd = ["find", "/storage/emulated/0/models", "-name", "*.gguf"]
+        out = subprocess.check_output(cmd, stderr=subprocess.DEVNULL).decode()
         models = [os.path.basename(l) for l in out.strip().split('\n') if l]
     except: pass
     return {"local_server": local_ok, "models": models, "venv": True}
@@ -47,6 +49,7 @@ def chat(req: ChatRequest):
 
 @app.post("/shell")
 def shell(req: ShellRequest):
-    result = subprocess.run(req.command, shell=True, capture_output=True, text=True, timeout=30)
+    args = shlex.split(req.command)
+    result = subprocess.run(args, shell=False, capture_output=True, text=True, timeout=30)
     return {"output": result.stdout + result.stderr}
 

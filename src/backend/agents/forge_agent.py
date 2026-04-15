@@ -1,4 +1,4 @@
-import os, sys, subprocess, operator, urllib.request, urllib.parse
+import os, sys, subprocess, operator, urllib.request, urllib.parse, shlex
 sys.path.insert(0, os.path.expanduser("~/crucible"))
 
 from langgraph.graph import StateGraph, END
@@ -23,7 +23,8 @@ Always use bash for filesystem tasks. Be concise and precise."""
 @tool
 def bash(command: str) -> str:
     """Run a bash command and return output."""
-    result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30)
+    args = shlex.split(command)
+    result = subprocess.run(args, shell=False, capture_output=True, text=True, timeout=30)
     return (result.stdout + result.stderr).strip()
 
 @tool
