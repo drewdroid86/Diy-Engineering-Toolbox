@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search } from 'lucide-react';
+import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search, MessageSquare } from 'lucide-react';
 import { ResistorColorCodeCalculator } from './components/ResistorColorCodeCalculator';
 import { OhmsLawCalculator } from './components/OhmsLawCalculator';
 import { UnitConverter } from './components/UnitConverter';
@@ -13,8 +13,9 @@ import { LEDResistorCalculator } from './components/LEDResistorCalculator';
 import { GearRatioCalculator } from './components/GearRatioCalculator';
 import { ConcreteVolumeCalculator } from './components/ConcreteVolumeCalculator';
 import { SlopeCalculator } from './components/SlopeCalculator';
+import { callGemini } from './lib/gemini';
 
-type ToolCategory = 'Electrical' | 'Mechanical' | 'General' | 'Civil';
+type ToolCategory = 'Electrical' | 'Mechanical' | 'General' | 'Civil' | 'AI Assistant';
 
 const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; description: string }[]> = {
   Electrical: [
@@ -24,7 +25,7 @@ const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; descrip
     { name: 'LED Resistor', icon: <Zap className="w-5 h-5" />, description: 'Calculate the required resistor for an LED.' },
   ],
   Mechanical: [
-    { name: 'Torque Converter', icon: <Ruler className="w-5 h-5" />, description: 'Convert between different torque units.' },
+    { name: 'Torque Calculator', icon: <Ruler className="w-5 h-5" />, description: 'Calculate torque based on force and distance.' },
     { name: 'Gear Ratio', icon: <Settings className="w-5 h-5" />, description: 'Calculate gear ratios.' },
   ],
   Civil: [
@@ -33,6 +34,9 @@ const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; descrip
   ],
   General: [
     { name: 'Unit Converter', icon: <Calculator className="w-5 h-5" />, description: 'Convert between various engineering units.' },
+  ],
+  'AI Assistant': [
+    { name: 'Gemini Assistant', icon: <MessageSquare className="w-5 h-5" />, description: 'Ask an engineering question to AI.' },
   ],
 };
 
@@ -51,6 +55,100 @@ const FORMULAS: Record<ToolCategory, { name: string; formula: string }[]> = {
       { name: 'Slope', formula: 'Slope = Rise / Run' },
   ],
   General: [],
+  'AI Assistant': [],
+};
+
+const GeminiAssistant = () => {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+    const newMessages = [...messages, { role: 'user', content: input }];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
+    try {
+      const reply = await callGemini(newMessages);
+      setMessages([...newMessages, { role: 'model', content: reply }]);
+    } catch (err: any) {
+      setMessages([...newMessages, { role: 'model', content: `Error: ${err.message}` }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border flex flex-col h-[600px]">
+      <h3 className="text-2xl font-bold mb-6">Gemini Engineering Assistant</h3>
+      <div className="flex-1 overflow-y-auto mb-6 space-y-4 pr-2">
+        {messages.map((m, i) => (
+          <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-accent/20 border border-accent/30 ml-8' : 'bg-muted border border-border mr-8'}`}>
+            <p className="font-bold mb-1 text-xs uppercase tracking-widest text-accent">{m.role === 'user' ? 'You' : 'Gemini'}</p>
+            <p className="text-sm whitespace-pre-wrap">{m.content}</p>
+          </div>
+        ))}
+        {loading && <p className="text-muted-foreground italic animate-pulse">Gemini is thinking...</p>}
+        {messages.length === 0 && (
+          <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground">
+            <MessageSquare className="w-12 h-12 mb-4 opacity-20" />
+            <p>Ask anything about formulas, materials, or engineering concepts.</p>
+          </div>
+        )}
+      </div>
+      <div className="flex gap-4">
+        <input 
+          type="text" 
+          value={input} 
+          onChange={(e) => setInput(e.target.value)} 
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Ask an engineering question..." 
+          className="flex-1 p-3 bg-input text-foreground rounded-lg focus:outline-none border border-border focus:border-accent" 
+        />
+        <button onClick={sendMessage} disabled={loading} className="bg-accent hover:bg-accent/80 text-accent-foreground font-bold py-3 px-6 rounded-lg transition disabled:opacity-50">Send</button>
+      </div>
+    </div>
+  );
+};
+
+const TorqueCalculator = () => {
+  const [force, setForce] = useState('');
+  const [distance, setDistance] = useState('');
+  const [angle, setAngle] = useState('90');
+  const [result, setResult] = useState<number | null>(null);
+
+  const calculate = () => {
+    const rad = (parseFloat(angle) * Math.PI) / 180;
+    setResult(parseFloat(force) * parseFloat(distance) * Math.sin(rad));
+  };
+
+  return (
+    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
+      <h3 className="text-2xl font-bold mb-6">Torque Calculator</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div>
+          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Force (N)</label>
+          <input type="number" value={force} onChange={(e) => setForce(e.target.value)} placeholder="Force (N)" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
+        </div>
+        <div>
+          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Distance (m)</label>
+          <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="Distance (m)" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
+        </div>
+        <div>
+          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Angle (deg)</label>
+          <input type="number" value={angle} onChange={(e) => setAngle(e.target.value)} placeholder="90" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
+        </div>
+      </div>
+      <button onClick={calculate} className="bg-accent hover:bg-accent/80 text-accent-foreground font-bold py-3 px-6 rounded-lg transition w-full">Calculate</button>
+      {result !== null && (
+        <div className="mt-8 p-6 bg-accent/10 border border-accent/20 rounded-xl text-center">
+          <p className="text-sm font-medium text-accent uppercase tracking-widest mb-1">Calculated Torque</p>
+          <p className="text-4xl font-bold">{result.toFixed(2)} Nm</p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const toolComponents: Record<string, React.ReactNode> = {
@@ -62,6 +160,8 @@ const toolComponents: Record<string, React.ReactNode> = {
   "Gear Ratio": <GearRatioCalculator />,
   "Concrete Volume": <ConcreteVolumeCalculator />,
   "Slope Calculator": <SlopeCalculator />,
+  "Torque Calculator": <TorqueCalculator />,
+  "Gemini Assistant": <GeminiAssistant />,
 };
 
 export default function App() {
@@ -88,7 +188,7 @@ export default function App() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-            <input type="text" placeholder="Search tools..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-2 rounded-full bg-input focus:outline-none focus:ring-2 focus:ring-ring" />
+            <input type="text" placeholder="Search tools..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-2 rounded-full bg-input focus:outline-none focus:ring-2 focus:ring-ring border border-border" />
           </div>
           <button className="p-2 rounded-full hover:bg-muted"><Settings className="w-5 h-5" /></button>
           <button className="p-2 rounded-full hover:bg-muted"><Info className="w-5 h-5" /></button>
@@ -96,12 +196,21 @@ export default function App() {
       </header>
 
       <div className="flex">
-        <nav className="w-64 p-6 border-r border-border">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">Frequently Used</h3>
+        <nav className="w-64 p-6 border-r border-border h-[calc(100vh-89px)] overflow-y-auto sticky top-[89px]">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4 tracking-wider">Frequently Used</h3>
           <ul className="space-y-2 mb-8">
-            {pinnedTools.map(tool => <li key={tool} className="text-sm font-medium p-2 bg-card rounded-lg">{tool}</li>)}
+            {pinnedTools.map(tool => (
+              <li key={tool}>
+                <button 
+                  onClick={() => setSelectedTool(tool)}
+                  className="w-full text-left text-sm font-medium p-3 bg-card border border-border rounded-lg hover:border-accent transition"
+                >
+                  {tool}
+                </button>
+              </li>
+            ))}
           </ul>
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4">Categories</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4 tracking-wider">Categories</h3>
           <ul className="space-y-2">
             {(Object.keys(TOOLS) as ToolCategory[]).map((category) => (
               <li key={category}>
@@ -114,32 +223,41 @@ export default function App() {
         <main className="flex-1 p-8">
           {selectedTool ? (
             <div>
-              <button onClick={() => setSelectedTool(null)} className="flex items-center gap-2 text-muted-foreground hover:text-text mb-6"><ArrowLeft className="w-4 h-4" /> Back</button>
-              {renderTool()}
+              <button onClick={() => setSelectedTool(null)} className="flex items-center gap-2 text-muted-foreground hover:text-text mb-6 transition"><ArrowLeft className="w-4 h-4" /> Back to Toolbox</button>
+              <div className="max-w-4xl mx-auto">
+                {renderTool()}
+              </div>
             </div>
           ) : (
             <>
-              <h2 className="text-xl font-semibold mb-6">{selectedCategory} Tools</h2>
+              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <div className="w-2 h-6 bg-accent rounded-full" />
+                {selectedCategory} Tools
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {TOOLS[selectedCategory].filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase())).map((tool) => (
-                  <div key={tool.name} className="bg-card text-card-foreground p-6 rounded-xl shadow-lg border border-border hover:border-accent transition cursor-pointer relative">
-                    <button onClick={() => togglePin(tool.name)} className="absolute top-2 right-2"><Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400 text-yellow-400' : 'text-white'}`} /></button>
+                  <div key={tool.name} className="bg-card text-card-foreground p-6 rounded-xl shadow-lg border border-border hover:border-accent transition cursor-pointer relative group">
+                    <button onClick={() => togglePin(tool.name)} className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition"><Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400 text-yellow-400 opacity-100' : 'text-muted-foreground'}`} /></button>
                     <div onClick={() => setSelectedTool(tool.name)}>
-                      <div className="mb-4 text-accent">{tool.icon}</div>
-                      <h3 className="text-lg font-medium">{tool.name}</h3>
-                      <p className="text-sm text-muted-foreground mt-2">{tool.description}</p>
+                      <div className="mb-4 text-accent bg-accent/10 w-12 h-12 flex items-center justify-center rounded-lg">{tool.icon}</div>
+                      <h3 className="text-lg font-medium group-hover:text-accent transition">{tool.name}</h3>
+                      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{tool.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <h2 className="text-xl font-semibold mb-6">Formulas</h2>
+              
+              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <div className="w-2 h-6 bg-border rounded-full" />
+                Engineering Formulas
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {(searchQuery ? Object.values(FORMULAS).flat() : FORMULAS[selectedCategory])
                   .filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
                   .map(f => (
-                    <div key={f.name} className="bg-card text-card-foreground p-6 rounded-xl shadow-sm border border-border">
-                      <h4 className="font-semibold">{f.name}</h4>
-                      <p className="font-mono text-sm text-muted-foreground">{f.formula}</p>
+                    <div key={f.name} className="bg-card/50 text-card-foreground p-6 rounded-xl shadow-sm border border-border">
+                      <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-2">{f.name}</h4>
+                      <p className="font-mono text-lg text-accent">{f.formula}</p>
                     </div>
                   ))}
               </div>
