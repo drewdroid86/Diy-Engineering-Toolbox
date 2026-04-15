@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search, MessageSquare } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search, MessageSquare, Menu, X } from 'lucide-react';
 import { ResistorColorCodeCalculator } from './components/ResistorColorCodeCalculator';
 import { OhmsLawCalculator } from './components/OhmsLawCalculator';
 import { UnitConverter } from './components/UnitConverter';
@@ -15,48 +15,20 @@ import { ConcreteVolumeCalculator } from './components/ConcreteVolumeCalculator'
 import { SlopeCalculator } from './components/SlopeCalculator';
 import { callGemini } from './lib/gemini';
 
-type ToolCategory = 'Electrical' | 'Mechanical' | 'General' | 'Civil' | 'AI Assistant';
+type ToolCategory = 'All' | 'Electrical' | 'Mechanical' | 'General' | 'Civil' | 'AI Assistant';
 
-const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; description: string }[]> = {
-  Electrical: [
-    { name: "Ohm's Law", icon: <Zap className="w-5 h-5" />, description: 'Calculate Voltage, Current, or Resistance.' },
-    { name: 'Resistor Color Code', icon: <Zap className="w-5 h-5" />, description: 'Determine resistor values from color bands.' },
-    { name: 'Voltage Divider', icon: <Zap className="w-5 h-5" />, description: 'Calculate output voltage from a voltage divider.' },
-    { name: 'LED Resistor', icon: <Zap className="w-5 h-5" />, description: 'Calculate the required resistor for an LED.' },
-  ],
-  Mechanical: [
-    { name: 'Torque Calculator', icon: <Ruler className="w-5 h-5" />, description: 'Calculate torque based on force and distance.' },
-    { name: 'Gear Ratio', icon: <Settings className="w-5 h-5" />, description: 'Calculate gear ratios.' },
-  ],
-  Civil: [
-      { name: 'Concrete Volume', icon: <Calculator className="w-5 h-5" />, description: 'Calculate volume of concrete needed.' },
-      { name: 'Slope Calculator', icon: <Ruler className="w-5 h-5" />, description: 'Calculate slope from rise and run.' },
-  ],
-  General: [
-    { name: 'Unit Converter', icon: <Calculator className="w-5 h-5" />, description: 'Convert between various engineering units.' },
-  ],
-  'AI Assistant': [
-    { name: 'Gemini Assistant', icon: <MessageSquare className="w-5 h-5" />, description: 'Ask an engineering question to AI.' },
-  ],
-};
-
-const FORMULAS: Record<ToolCategory, { name: string; formula: string }[]> = {
-  Electrical: [
-      { name: "Ohm's Law", formula: 'V = I * R' },
-      { name: 'Power', formula: 'P = V * I' },
-      { name: 'Voltage Divider', formula: 'Vout = Vin * (R2 / (R1 + R2))' },
-  ],
-  Mechanical: [
-      { name: 'Torque', formula: 'T = F * r' },
-      { name: 'Gear Ratio', formula: 'Ratio = Teeth_Out / Teeth_In' },
-  ],
-  Civil: [
-      { name: 'Stress', formula: 'σ = F / A' },
-      { name: 'Slope', formula: 'Slope = Rise / Run' },
-  ],
-  General: [],
-  'AI Assistant': [],
-};
+const ALL_TOOLS: { name: string; icon: React.ReactNode; description: string; category: Exclude<ToolCategory, 'All'> }[] = [
+  { name: "Ohm's Law", icon: <Zap className="w-6 h-6" />, description: 'Calculate V, I, or R', category: 'Electrical' },
+  { name: 'Resistor Color Code', icon: <Zap className="w-6 h-6" />, description: 'Read resistor bands', category: 'Electrical' },
+  { name: 'Voltage Divider', icon: <Zap className="w-6 h-6" />, description: 'Calculate output voltage', category: 'Electrical' },
+  { name: 'LED Resistor', icon: <Zap className="w-6 h-6" />, description: 'Calculate LED resistor', category: 'Electrical' },
+  { name: 'Torque Calculator', icon: <Ruler className="w-6 h-6" />, description: 'Calculate torque', category: 'Mechanical' },
+  { name: 'Gear Ratio', icon: <Settings className="w-6 h-6" />, description: 'Calculate gear ratios', category: 'Mechanical' },
+  { name: 'Unit Converter', icon: <Calculator className="w-6 h-6" />, description: 'Convert units', category: 'General' },
+  { name: 'Concrete Volume', icon: <Calculator className="w-6 h-6" />, description: 'Calculate concrete', category: 'Civil' },
+  { name: 'Slope Calculator', icon: <Ruler className="w-6 h-6" />, description: 'Calculate slope', category: 'Civil' },
+  { name: 'Gemini Assistant', icon: <MessageSquare className="w-6 h-6" />, description: 'Ask AI questions', category: 'AI Assistant' },
+];
 
 const GeminiAssistant = () => {
   const [input, setInput] = useState('');
