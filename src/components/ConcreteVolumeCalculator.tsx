@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { CalculatorCard } from './ui/CalculatorCard';
+import { CalculatorInput } from './ui/CalculatorInput';
+import { ResultDisplay } from './ui/ResultDisplay';
 
 export const ConcreteVolumeCalculator = () => {
   const [length, setLength] = useState('');
@@ -21,24 +24,14 @@ export const ConcreteVolumeCalculator = () => {
   }
 
   return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
-      <h3 className="text-2xl font-bold mb-6">Concrete Volume Calculator</h3>
+    <CalculatorCard title="Concrete Volume Calculator">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-muted-foreground mb-2">Length (feet)</label>
-          <input type="number" value={length} onChange={(e) => setLength(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2">Width (feet)</label>
-          <input type="number" value={width} onChange={(e) => setWidth(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2">Thickness (inches)</label>
-          <input type="number" value={thickness} onChange={(e) => setThickness(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
+        <CalculatorInput label="Length" unit="feet" value={length} onChange={(e) => setLength(e.target.value)} />
+        <CalculatorInput label="Width" unit="feet" value={width} onChange={(e) => setWidth(e.target.value)} />
+        <CalculatorInput label="Thickness" unit="inches" value={thickness} onChange={(e) => setThickness(e.target.value)} />
       </div>
-      {volumeCubicYards && <p className="text-2xl font-bold mt-8">Volume: {volumeCubicYards} cubic yards</p>}
+      {volumeCubicYards && <ResultDisplay label="Volume" value={volumeCubicYards} unit="cubic yards" />}
       {volumeCubicMeters && <p className="text-xl text-muted-foreground mt-4">({volumeCubicMeters} cubic meters)</p>}
-    </div>
+    </CalculatorCard>
   );
 };

@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { CalculatorCard } from './ui/CalculatorCard';
+import { CalculatorInput } from './ui/CalculatorInput';
+import { ResultDisplay } from './ui/ResultDisplay';
 
 export const VoltageDividerCalculator = () => {
   const [vin, setVin] = useState('');
@@ -15,23 +18,13 @@ export const VoltageDividerCalculator = () => {
   }
 
   return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
-      <h3 className="text-2xl font-bold mb-6">Voltage Divider Calculator</h3>
+    <CalculatorCard title="Voltage Divider Calculator">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-muted-foreground mb-2">Input Voltage (Vin)</label>
-          <input type="number" value={vin} onChange={(e) => setVin(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2">Resistor 1 (R1)</label>
-          <input type="number" value={r1} onChange={(e) => setR1(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2">Resistor 2 (R2)</label>
-          <input type="number" value={r2} onChange={(e) => setR2(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
+        <CalculatorInput label="Input Voltage" unit="V" value={vin} onChange={(e) => setVin(e.target.value)} />
+        <CalculatorInput label="Resistor 1" unit="Ω" value={r1} onChange={(e) => setR1(e.target.value)} />
+        <CalculatorInput label="Resistor 2" unit="Ω" value={r2} onChange={(e) => setR2(e.target.value)} />
       </div>
-      <p className="text-2xl font-bold mt-8">Output Voltage (Vout): {vout} V</p>
-    </div>
+      {vout && <ResultDisplay label="Output Voltage" value={vout} unit="V" />}
+    </CalculatorCard>
   );
 };

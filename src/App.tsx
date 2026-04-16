@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search, MessageSquare } from 'lucide-react';
+import { Info, ArrowLeft, Star, Search } from 'lucide-react';
 import { ResistorColorCodeCalculator } from './components/ResistorColorCodeCalculator';
 import { OhmsLawCalculator } from './components/OhmsLawCalculator';
 import { UnitConverter } from './components/UnitConverter';
@@ -13,143 +13,9 @@ import { LEDResistorCalculator } from './components/LEDResistorCalculator';
 import { GearRatioCalculator } from './components/GearRatioCalculator';
 import { ConcreteVolumeCalculator } from './components/ConcreteVolumeCalculator';
 import { SlopeCalculator } from './components/SlopeCalculator';
-import { callGemini } from './lib/gemini';
-
-type ToolCategory = 'Electrical' | 'Mechanical' | 'General' | 'Civil' | 'AI Assistant';
-
-const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; description: string }[]> = {
-  Electrical: [
-    { name: "Ohm's Law", icon: <Zap className="w-5 h-5" />, description: 'Calculate Voltage, Current, or Resistance.' },
-    { name: 'Resistor Color Code', icon: <Zap className="w-5 h-5" />, description: 'Determine resistor values from color bands.' },
-    { name: 'Voltage Divider', icon: <Zap className="w-5 h-5" />, description: 'Calculate output voltage from a voltage divider.' },
-    { name: 'LED Resistor', icon: <Zap className="w-5 h-5" />, description: 'Calculate the required resistor for an LED.' },
-  ],
-  Mechanical: [
-    { name: 'Torque Calculator', icon: <Ruler className="w-5 h-5" />, description: 'Calculate torque based on force and distance.' },
-    { name: 'Gear Ratio', icon: <Settings className="w-5 h-5" />, description: 'Calculate gear ratios.' },
-  ],
-  Civil: [
-      { name: 'Concrete Volume', icon: <Calculator className="w-5 h-5" />, description: 'Calculate volume of concrete needed.' },
-      { name: 'Slope Calculator', icon: <Ruler className="w-5 h-5" />, description: 'Calculate slope from rise and run.' },
-  ],
-  General: [
-    { name: 'Unit Converter', icon: <Calculator className="w-5 h-5" />, description: 'Convert between various engineering units.' },
-  ],
-  'AI Assistant': [
-    { name: 'Gemini Assistant', icon: <MessageSquare className="w-5 h-5" />, description: 'Ask an engineering question to AI.' },
-  ],
-};
-
-const FORMULAS: Record<ToolCategory, { name: string; formula: string }[]> = {
-  Electrical: [
-      { name: "Ohm's Law", formula: 'V = I * R' },
-      { name: 'Power', formula: 'P = V * I' },
-      { name: 'Voltage Divider', formula: 'Vout = Vin * (R2 / (R1 + R2))' },
-  ],
-  Mechanical: [
-      { name: 'Torque', formula: 'T = F * r' },
-      { name: 'Gear Ratio', formula: 'Ratio = Teeth_Out / Teeth_In' },
-  ],
-  Civil: [
-      { name: 'Stress', formula: 'σ = F / A' },
-      { name: 'Slope', formula: 'Slope = Rise / Run' },
-  ],
-  General: [],
-  'AI Assistant': [],
-};
-
-const GeminiAssistant = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-    const newMessages = [...messages, { role: 'user', content: input }];
-    setMessages(newMessages);
-    setInput('');
-    setLoading(true);
-    try {
-      const reply = await callGemini(newMessages);
-      setMessages([...newMessages, { role: 'model', content: reply }]);
-    } catch (err: any) {
-      setMessages([...newMessages, { role: 'model', content: `Error: ${err.message}` }]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border flex flex-col h-[600px]">
-      <h3 className="text-2xl font-bold mb-6">Gemini Engineering Assistant</h3>
-      <div className="flex-1 overflow-y-auto mb-6 space-y-4 pr-2">
-        {messages.map((m, i) => (
-          <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-accent/20 border border-accent/30 ml-8' : 'bg-muted border border-border mr-8'}`}>
-            <p className="font-bold mb-1 text-xs uppercase tracking-widest text-accent">{m.role === 'user' ? 'You' : 'Gemini'}</p>
-            <p className="text-sm whitespace-pre-wrap">{m.content}</p>
-          </div>
-        ))}
-        {loading && <p className="text-muted-foreground italic animate-pulse">Gemini is thinking...</p>}
-        {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground">
-            <MessageSquare className="w-12 h-12 mb-4 opacity-20" />
-            <p>Ask anything about formulas, materials, or engineering concepts.</p>
-          </div>
-        )}
-      </div>
-      <div className="flex gap-4">
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Ask an engineering question..." 
-          className="flex-1 p-3 bg-input text-foreground rounded-lg focus:outline-none border border-border focus:border-accent" 
-        />
-        <button onClick={sendMessage} disabled={loading} className="bg-accent hover:bg-accent/80 text-accent-foreground font-bold py-3 px-6 rounded-lg transition disabled:opacity-50">Send</button>
-      </div>
-    </div>
-  );
-};
-
-const TorqueCalculator = () => {
-  const [force, setForce] = useState('');
-  const [distance, setDistance] = useState('');
-  const [angle, setAngle] = useState('90');
-  const [result, setResult] = useState<number | null>(null);
-
-  const calculate = () => {
-    const rad = (parseFloat(angle) * Math.PI) / 180;
-    setResult(parseFloat(force) * parseFloat(distance) * Math.sin(rad));
-  };
-
-  return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
-      <h3 className="text-2xl font-bold mb-6">Torque Calculator</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div>
-          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Force (N)</label>
-          <input type="number" value={force} onChange={(e) => setForce(e.target.value)} placeholder="Force (N)" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Distance (m)</label>
-          <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="Distance (m)" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2 text-sm font-medium uppercase tracking-wider">Angle (deg)</label>
-          <input type="number" value={angle} onChange={(e) => setAngle(e.target.value)} placeholder="90" className="w-full p-3 bg-input text-foreground border border-border rounded-lg" />
-        </div>
-      </div>
-      <button onClick={calculate} className="bg-accent hover:bg-accent/80 text-accent-foreground font-bold py-3 px-6 rounded-lg transition w-full">Calculate</button>
-      {result !== null && (
-        <div className="mt-8 p-6 bg-accent/10 border border-accent/20 rounded-xl text-center">
-          <p className="text-sm font-medium text-accent uppercase tracking-widest mb-1">Calculated Torque</p>
-          <p className="text-4xl font-bold">{result.toFixed(2)} Nm</p>
-        </div>
-      )}
-    </div>
-  );
-};
+import { GeminiAssistant } from './components/GeminiAssistant';
+import { TorqueCalculator } from './components/TorqueCalculator';
+import { TOOLS, FORMULAS, ToolCategory } from './data/tools';
 
 const toolComponents: Record<string, React.ReactNode> = {
   "Ohm's Law": <OhmsLawCalculator />,
@@ -190,7 +56,6 @@ export default function App() {
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
             <input type="text" placeholder="Search tools..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-2 rounded-full bg-input focus:outline-none focus:ring-2 focus:ring-ring border border-border" />
           </div>
-          <button className="p-2 rounded-full hover:bg-muted"><Settings className="w-5 h-5" /></button>
           <button className="p-2 rounded-full hover:bg-muted"><Info className="w-5 h-5" /></button>
         </div>
       </header>

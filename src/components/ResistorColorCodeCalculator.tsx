@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CalculatorCard } from './ui/CalculatorCard';
 
 const colors = [
   { name: 'Black', value: 0 },
@@ -22,8 +23,7 @@ export const ResistorColorCodeCalculator = () => {
   const resistance = ((band1 * 10 + band2) * multiplier);
 
   return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
-      <h3 className="text-2xl font-bold mb-6">Resistor Color Code</h3>
+    <CalculatorCard title="Resistor Color Code">
       <div className="grid grid-cols-2 gap-6">
         <div>
           <label className="block text-muted-foreground mb-2">Band 1</label>
@@ -54,6 +54,6 @@ export const ResistorColorCodeCalculator = () => {
         </div>
       </div>
       <p className="text-2xl font-bold mt-8">Resistance: {resistance} Ω ±{tolerance}%</p>
-    </div>
+    </CalculatorCard>
   );
 };

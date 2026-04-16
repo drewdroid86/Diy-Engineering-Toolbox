@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { CalculatorCard } from './ui/CalculatorCard';
+import { CalculatorInput } from './ui/CalculatorInput';
+import { ResultDisplay } from './ui/ResultDisplay';
 
 export const SlopeCalculator = () => {
   const [rise, setRise] = useState('');
@@ -17,20 +20,13 @@ export const SlopeCalculator = () => {
   }
 
   return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
-      <h3 className="text-2xl font-bold mb-6">Slope Calculator</h3>
+    <CalculatorCard title="Slope Calculator">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-muted-foreground mb-2">Rise</label>
-          <input type="number" value={rise} onChange={(e) => setRise(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2">Run</label>
-          <input type="number" value={run} onChange={(e) => setRun(e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
+        <CalculatorInput label="Rise" value={rise} onChange={(e) => setRise(e.target.value)} />
+        <CalculatorInput label="Run" value={run} onChange={(e) => setRun(e.target.value)} />
       </div>
-      {slopePercentage && <p className="text-2xl font-bold mt-8">Slope: {slopePercentage}%</p>}
+      {slopePercentage && <ResultDisplay label="Slope" value={slopePercentage} unit="%" />}
       {slopeRatio && <p className="text-xl text-muted-foreground mt-4">(Ratio {slopeRatio})</p>}
-    </div>
+    </CalculatorCard>
   );
 };

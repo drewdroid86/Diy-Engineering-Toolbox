@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { CalculatorCard } from './ui/CalculatorCard';
+import { CalculatorInput } from './ui/CalculatorInput';
 
 export const OhmsLawCalculator = () => {
   const [v, setV] = useState('');
@@ -48,22 +50,12 @@ export const OhmsLawCalculator = () => {
   };
   
     return (
-    <div className="bg-card text-card-foreground p-8 rounded-xl shadow-lg border border-border">
-      <h3 className="text-2xl font-bold mb-6">Ohm's Law Calculator</h3>
+    <CalculatorCard title="Ohm's Law Calculator">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-muted-foreground mb-2">Voltage (V)</label>
-          <input type="number" value={v} onChange={(e) => calculate('v', e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2">Current (I)</label>
-          <input type="number" value={i} onChange={(e) => calculate('i', e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
-        <div>
-          <label className="block text-muted-foreground mb-2">Resistance (R)</label>
-          <input type="number" value={r} onChange={(e) => calculate('r', e.target.value)} className="w-full p-3 bg-input text-text rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" />
-        </div>
+        <CalculatorInput label="Voltage" unit="V" value={v} onChange={(e) => calculate('v', e.target.value)} />
+        <CalculatorInput label="Current" unit="A" value={i} onChange={(e) => calculate('i', e.target.value)} />
+        <CalculatorInput label="Resistance" unit="Ω" value={r} onChange={(e) => calculate('r', e.target.value)} />
       </div>
-    </div>
+    </CalculatorCard>
   );
 };
