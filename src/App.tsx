@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search, Scale, Thermometer, Gauge } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Zap, Ruler, Calculator, Settings, Info, ArrowLeft, Star, Search, Scale, Thermometer, Gauge, Compass, Dice1, RefreshCcw, Volume2 } from 'lucide-react';
 
 type ToolCategory = 'Electrical' | 'Mechanical' | 'General' | 'Civil';
 
@@ -15,10 +15,18 @@ const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; descrip
   ],
   Mechanical: [
     { name: 'Torque Converter', icon: <Ruler className="w-5 h-5" />, description: 'Convert between different torque units.' },
+    { name: '3D Bubble Level', icon: <Gauge className="w-5 h-5" />, description: 'Animated 3D bubble level.' },
+    { name: 'Compass', icon: <Compass className="w-5 h-5" />, description: 'Animated compass heading.' },
+    { name: 'Angle Calculator', icon: <Thermometer className="w-5 h-5" />, description: 'Compute angles from rise/run and convert units.' },
   ],
   Civil: [],
   General: [
+    { name: 'Welcome', icon: <Info className="w-5 h-5" />, description: 'Get started with the toolbox.' },
     { name: 'Unit Converter', icon: <Calculator className="w-5 h-5" />, description: 'Convert between various engineering units.' },
+    { name: 'Coin Flip', icon: <RefreshCcw className="w-5 h-5" />, description: 'Flip a virtual coin with animation.' },
+    { name: 'Dice Roll', icon: <Dice1 className="w-5 h-5" />, description: 'Roll a six-sided die.' },
+    { name: 'Noise Meter', icon: <Volume2 className="w-5 h-5" />, description: 'Simulate ambient noise levels.' },
+    { name: 'Settle Account', icon: <Scale className="w-5 h-5" />, description: 'Split a bill and see who owes what.' },
   ],
 };
 
@@ -26,12 +34,16 @@ const FORMULAS: Record<ToolCategory, { name: string; formula: string }[]> = {
   Electrical: [{ name: 'Ohm\'s Law', formula: 'V = I * R' }, { name: 'Power', formula: 'P = V * I' }],
   Mechanical: [{ name: 'Torque', formula: 'T = F * r' }],
   Civil: [{ name: 'Stress', formula: 'σ = F / A' }],
-  General: [],
+  General: [
+    { name: 'Angle Conversion', formula: 'rad = deg × π / 180' },
+    { name: 'Noise Level', formula: 'dB = 20 log10(p/p₀)' },
+    { name: 'Share Split', formula: 'share = total / people' },
+  ],
 };
 
 export default function App() {
-  const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('Electrical');
-  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('General');
+  const [selectedTool, setSelectedTool] = useState<string | null>('Welcome');
   const [pinnedTools, setPinnedTools] = useState<string[]>(['Ohm\'s Law']);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -202,13 +214,282 @@ const UnitConverter = () => {
     </div>
   );
 };
+
+const CoinFlip = () => {
+  const [result, setResult] = useState<string>('Flip the coin');
+  const [flipping, setFlipping] = useState(false);
+
+  const flip = () => {
+    if (flipping) return;
+    setFlipping(true);
+    setTimeout(() => {
+      setResult(Math.random() < 0.5 ? 'Heads' : 'Tails');
+      setFlipping(false);
+    }, 800);
+  };
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">Coin Flip</h3>
+      <p className="text-[#8E9299]">Tap the coin to see heads or tails.</p>
+      <div style={{ perspective: 700 }} className="mt-8 flex justify-center">
+        <div className={`w-36 h-36 rounded-full bg-gradient-to-br from-slate-100 to-yellow-300 shadow-2xl flex items-center justify-center text-2xl font-bold text-[#151619] transition-transform ${flipping ? 'animate-spin' : ''}`}>
+          {flipping ? 'Flipping' : result}
+        </div>
+      </div>
+      <button onClick={flip} disabled={flipping} className="mt-8 w-full px-6 py-3 bg-[#FF4444] text-white rounded-lg hover:bg-[#e33a3a] transition disabled:opacity-60">
+        {flipping ? 'Flipping...' : 'Flip Coin'}
+      </button>
+    </div>
+  );
+};
+
+const DiceRoll = () => {
+  const [value, setValue] = useState<number | null>(null);
+  const [rolling, setRolling] = useState(false);
+
+  const roll = () => {
+    setRolling(true);
+    setTimeout(() => {
+      setValue(Math.floor(Math.random() * 6) + 1);
+      setRolling(false);
+    }, 700);
+  };
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">Dice Roll</h3>
+      <p className="text-[#8E9299]">Roll a six-sided die and see the animated result.</p>
+      <div className="mt-8 flex justify-center">
+        <div className={`w-36 h-36 rounded-3xl bg-white text-[#151619] text-6xl font-bold flex items-center justify-center shadow-xl transition-transform ${rolling ? 'animate-bounce' : ''}`}>
+          {value || '?'}
+        </div>
+      </div>
+      <button onClick={roll} disabled={rolling} className="mt-8 w-full px-6 py-3 bg-[#FF4444] text-white rounded-lg hover:bg-[#e33a3a] transition disabled:opacity-60">
+        {rolling ? 'Rolling...' : 'Roll Die'}
+      </button>
+    </div>
+  );
+};
+
+const NoiseMeter = () => {
+  const [level, setLevel] = useState(42);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLevel(30 + Math.round(Math.random() * 80));
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const width = Math.min(100, (level / 120) * 100);
+  const label = level > 85 ? 'Very loud' : level > 70 ? 'Loud' : level > 50 ? 'Moderate' : 'Quiet';
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">Noise Meter</h3>
+      <p className="text-[#8E9299]">Simulated ambient noise level.</p>
+      <div className="mt-8 space-y-4">
+        <div className="h-4 w-full bg-[#E6E6E6] rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-600" style={{ width: `${width}%` }} />
+        </div>
+        <div className="flex justify-between text-sm text-[#8E9299]">
+          <span>{label}</span>
+          <span>{level} dB</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SettleAccount = () => {
+  const [total, setTotal] = useState('');
+  const [paid, setPaid] = useState('');
+  const [people, setPeople] = useState('2');
+
+  const totalNum = parseFloat(total);
+  const paidNum = parseFloat(paid);
+  const count = Math.max(1, parseInt(people, 10) || 1);
+  const share = !isNaN(totalNum) ? totalNum / count : 0;
+  const balance = !isNaN(paidNum) ? paidNum - share : 0;
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">Settle Account</h3>
+      <div className="grid grid-cols-1 gap-4">
+        <input type="number" value={total} onChange={(e) => setTotal(e.target.value)} placeholder="Total amount" className="p-3 rounded-lg text-[#151619] bg-[#E6E6E6]" />
+        <input type="number" value={paid} onChange={(e) => setPaid(e.target.value)} placeholder="Amount you paid" className="p-3 rounded-lg text-[#151619] bg-[#E6E6E6]" />
+        <input type="number" min="1" value={people} onChange={(e) => setPeople(e.target.value)} placeholder="Number of people" className="p-3 rounded-lg text-[#151619] bg-[#E6E6E6]" />
+      </div>
+      <div className="mt-8 bg-white text-[#151619] p-6 rounded-xl shadow-inner">
+        <p className="font-semibold">Each person owes</p>
+        <p className="text-4xl font-bold mt-2">${share.toFixed(2)}</p>
+        <p className="mt-4 text-sm text-[#8E9299]">{!isNaN(balance) ? (balance >= 0 ? `You paid $${balance.toFixed(2)} more than your share.` : `You owe $${Math.abs(balance).toFixed(2)}.`) : 'Enter amounts to settle the bill.'}</p>
+      </div>
+    </div>
+  );
+};
+
+const BubbleLevel3D = () => {
+  const [tilt, setTilt] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTilt(prev => {
+        if (prev >= 18) return -18;
+        return prev + 2;
+      });
+    }, 120);
+    return () => clearInterval(interval);
+  }, []);
+
+  const bubbleX = tilt * 2;
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">3D Bubble Level</h3>
+      <p className="text-[#8E9299]">Animated level showing a bubble moving with tilt.</p>
+      <div style={{ perspective: 900 }} className="mt-10 flex justify-center">
+        <div className="relative w-80 h-24 bg-[#CBD5E1] rounded-full shadow-inner" style={{ transform: `rotate(${tilt}deg)`, transition: 'transform 0.12s ease-out' }}>
+          <div className="absolute inset-y-0 left-1/2 w-32 border border-white/50" />
+          <div className="absolute top-1/2 left-1/2 h-14 w-14 rounded-full bg-cyan-400 shadow-2xl" style={{ transform: `translate(-50%, -50%) translateX(${bubbleX}px)` }} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CompassTool = () => {
+  const [heading, setHeading] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeading(prev => (prev + Math.floor(Math.random() * 32) + 8) % 360);
+    }, 1400);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">Compass</h3>
+      <p className="text-[#8E9299]">Animated heading indicator with a rotating needle.</p>
+      <div className="mt-10 flex justify-center">
+        <div className="relative w-72 h-72 rounded-full border-8 border-[#94A3B8] bg-[#F8FAFC] shadow-xl">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative w-48 h-48 rounded-full border-2 border-[#CBD5E1] bg-gradient-to-br from-white to-slate-200">
+              <div className="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-[0.35em] text-[#64748B]">
+                N E S W
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute h-24 w-1 bg-red-500 origin-bottom" style={{ transform: `rotate(${heading}deg)` }} />
+                <div className="absolute h-24 w-1 bg-slate-500 origin-bottom" style={{ transform: `rotate(${heading + 180}deg)` }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="mt-8 text-center text-[#E2E8F0]">
+        <p className="text-sm uppercase tracking-[0.25em]">Heading</p>
+        <p className="text-3xl font-bold">{heading}°</p>
+      </div>
+    </div>
+  );
+};
+
+const AngleCalculator = () => {
+  const [rise, setRise] = useState('');
+  const [run, setRun] = useState('');
+  const riseNum = parseFloat(rise);
+  const runNum = parseFloat(run);
+  const angle = !isNaN(riseNum) && !isNaN(runNum) && runNum !== 0 ? Math.atan2(riseNum, runNum) : NaN;
+  const degrees = !isNaN(angle) ? angle * (180 / Math.PI) : NaN;
+  const radians = !isNaN(angle) ? angle.toFixed(3) : '-';
+
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-2xl font-bold mb-6">Angle Calculator</h3>
+      <p className="text-[#8E9299]">Compute angle from rise/run and see degrees and radians.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+        <input type="number" value={rise} onChange={(e) => setRise(e.target.value)} placeholder="Rise" className="p-3 rounded-lg text-[#151619] bg-[#E6E6E6]" />
+        <input type="number" value={run} onChange={(e) => setRun(e.target.value)} placeholder="Run" className="p-3 rounded-lg text-[#151619] bg-[#E6E6E6]" />
+      </div>
+      <div className="mt-8 bg-white text-[#151619] p-6 rounded-xl shadow-inner">
+        <p className="text-sm text-[#64748B]">Angle</p>
+        <p className="text-4xl font-bold mt-2">{isNaN(degrees) ? '-' : `${degrees.toFixed(2)}°`}</p>
+        <p className="mt-2 text-sm text-[#64748B]">{`Radians: ${radians}`}</p>
+      </div>
+    </div>
+  );
+};
+
+const Welcome = () => {
+  return (
+    <div className="bg-[#151619] text-white p-8 rounded-xl shadow-lg border border-[#8E9299]/20">
+      <h3 className="text-3xl font-bold mb-6">Welcome to the DIY Engineering Toolbox!</h3>
+      <p className="text-[#8E9299] mb-8">A collection of useful engineering calculators and fun tools. Browse by category or search for what you need.</p>
+
+      <div className="space-y-6">
+        <div>
+          <h4 className="text-xl font-semibold mb-3 text-[#FF4444]">Electrical Tools</h4>
+          <ul className="space-y-2 text-[#8E9299]">
+            <li>• Ohm's Law Calculator - Calculate voltage, current, or resistance</li>
+            <li>• Resistor Color Code - Decode resistor band colors</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-xl font-semibold mb-3 text-[#FF4444]">Mechanical Tools</h4>
+          <ul className="space-y-2 text-[#8E9299]">
+            <li>• Torque Converter - Convert between torque units</li>
+            <li>• 3D Bubble Level - Animated level with moving bubble</li>
+            <li>• Compass - Animated heading indicator</li>
+            <li>• Angle Calculator - Compute angles from rise/run</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-xl font-semibold mb-3 text-[#FF4444]">General Tools</h4>
+          <ul className="space-y-2 text-[#8E9299]">
+            <li>• Unit Converter - Convert between engineering units</li>
+            <li>• Coin Flip - Animated coin toss</li>
+            <li>• Dice Roll - Roll a six-sided die</li>
+            <li>• Noise Meter - Simulated ambient noise levels</li>
+            <li>• Settle Account - Split bills and calculate shares</li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="mt-8 p-4 bg-[#E6E6E6] text-[#151619] rounded-lg">
+        <p className="font-semibold">💡 Tip:</p>
+        <p className="text-sm mt-1">Use the search bar to quickly find tools, or pin your favorites for easy access!</p>
+      </div>
+    </div>
+  );
+};
+
   const renderTool = () => {
-    if (selectedTool === 'Ohm\'s Law') {
+    if (selectedTool === 'Welcome') {
+      return <Welcome />;
+    } else if (selectedTool === 'Ohm\'s Law') {
       return <OhmsLawCalculator />;
     } else if (selectedTool === 'Resistor Color Code') {
       return <ResistorColorCodeCalculator />;
     } else if (selectedTool === 'Unit Converter') {
       return <UnitConverter />;
+    } else if (selectedTool === 'Coin Flip') {
+      return <CoinFlip />;
+    } else if (selectedTool === 'Dice Roll') {
+      return <DiceRoll />;
+    } else if (selectedTool === 'Noise Meter') {
+      return <NoiseMeter />;
+    } else if (selectedTool === 'Settle Account') {
+      return <SettleAccount />;
+    } else if (selectedTool === '3D Bubble Level') {
+      return <BubbleLevel3D />;
+    } else if (selectedTool === 'Compass') {
+      return <CompassTool />;
+    } else if (selectedTool === 'Angle Calculator') {
+      return <AngleCalculator />;
     }
     return <p className="text-[#8E9299]">Select a tool to begin.</p>;
   };
