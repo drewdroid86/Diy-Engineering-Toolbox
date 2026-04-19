@@ -1,6 +1,4 @@
 
-import React from 'react';
-
 interface ResultDisplayProps {
   label: string;
   value: string;

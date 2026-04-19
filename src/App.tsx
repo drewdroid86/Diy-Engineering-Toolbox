@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { Info, ArrowLeft, Star, Search } from 'lucide-react';
 import { ResistorColorCodeCalculator } from './components/ResistorColorCodeCalculator';
 import { OhmsLawCalculator } from './components/OhmsLawCalculator';
@@ -17,7 +17,7 @@ import { GeminiAssistant } from './components/GeminiAssistant';
 import { TorqueCalculator } from './components/TorqueCalculator';
 import { TOOLS, FORMULAS, ToolCategory } from './data/tools';
 
-const toolComponents: Record<string, React.ReactNode> = {
+const toolComponents: Record<string, ReactNode> = {
   "Ohm's Law": <OhmsLawCalculator />,
   "Resistor Color Code": <ResistorColorCodeCalculator />,
   "Unit Converter": <UnitConverter />,

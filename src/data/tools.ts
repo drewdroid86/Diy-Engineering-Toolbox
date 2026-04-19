@@ -1,10 +1,10 @@
 
-import React from 'react';
+import { ReactNode } from 'react';
 import { Zap, Ruler, Calculator, Settings, MessageSquare } from 'lucide-react';
 
 export type ToolCategory = 'Electrical' | 'Mechanical' | 'General' | 'Civil' | 'AI Assistant';
 
-export const TOOLS: Record<ToolCategory, { name: string; icon: React.ReactNode; description: string }[]> = {
+export const TOOLS: Record<ToolCategory, { name: string; icon: ReactNode; description: string }[]> = {
   Electrical: [
     { name: "Ohm's Law", icon: <Zap className="w-5 h-5" />, description: 'Calculate Voltage, Current, or Resistance.' },
     { name: 'Resistor Color Code', icon: <Zap className="w-5 h-5" />, description: 'Determine resistor values from color bands.' },
