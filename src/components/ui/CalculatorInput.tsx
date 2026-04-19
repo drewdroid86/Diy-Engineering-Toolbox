@@ -1,10 +1,10 @@
 
-import React from 'react';
+import { ChangeEvent } from 'react';
 
 interface CalculatorInputProps {
   label: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   unit?: string;
 }

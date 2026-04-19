@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CalculatorCard } from './ui/CalculatorCard';
 import { CalculatorInput } from './ui/CalculatorInput';
 

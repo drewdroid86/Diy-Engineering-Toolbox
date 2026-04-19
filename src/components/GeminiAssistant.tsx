@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { callGemini } from '../lib/gemini';
 
