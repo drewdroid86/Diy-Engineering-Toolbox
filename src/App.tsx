@@ -36,6 +36,8 @@ export default function App() {
   const [pinnedTools, setPinnedTools] = useState<string[]>(["Ohm's Law"]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const lowercasedQuery = searchQuery.toLowerCase();
+
   const togglePin = (toolName: string) => {
     setPinnedTools(prev => prev.includes(toolName) ? prev.filter(t => t !== toolName) : [...prev, toolName]);
   };
@@ -100,7 +102,7 @@ export default function App() {
                 {selectedCategory} Tools
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {TOOLS[selectedCategory].filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase())).map((tool) => (
+                {TOOLS[selectedCategory].filter(t => t.name.toLowerCase().includes(lowercasedQuery)).map((tool) => (
                   <div key={tool.name} className="bg-card text-card-foreground p-6 rounded-xl shadow-lg border border-border hover:border-accent transition cursor-pointer relative group">
                     <button onClick={() => togglePin(tool.name)} className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition"><Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400 text-yellow-400 opacity-100' : 'text-muted-foreground'}`} /></button>
                     <div onClick={() => setSelectedTool(tool.name)}>
@@ -118,7 +120,7 @@ export default function App() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {(searchQuery ? Object.values(FORMULAS).flat() : FORMULAS[selectedCategory])
-                  .filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .filter(f => f.name.toLowerCase().includes(lowercasedQuery))
                   .map(f => (
                     <div key={f.name} className="bg-card/50 text-card-foreground p-6 rounded-xl shadow-sm border border-border">
                       <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-2">{f.name}</h4>
