@@ -229,6 +229,15 @@ export const TOOLS: Tool[] = [
 
   // AI/ML
   { 
+    id: 'gemini-assistant', 
+    name: 'Gemini Assistant', 
+    description: 'AI Engineering Partner', 
+    longDescription: 'A sophisticated AI interface powered by Anthropic\'s latest models. Designed to help you solve complex multi-step problems, optimize material selections, and debug code snippets within an engineering context.',
+    icon: '✨', 
+    color: '#00e5ff', 
+    category: 'AI/ML' 
+  },
+  { 
     id: 'token-counter', 
     name: 'Token Counter', 
     description: 'Estimate LLM cost & context', 

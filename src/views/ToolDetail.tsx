@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tool } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Share2, MoreVertical, RefreshCcw, Copy, Check, Clock } from 'lucide-react';
+import { GeminiAssistant } from '../components/GeminiAssistant';
 
 interface ToolDetailProps {
   tool: Tool;
@@ -1193,24 +1194,300 @@ const ModelComparisonTable = () => {
 const UnitConverterTool = () => {
   const [val, setVal] = useState('1');
   const [type, setType] = useState<'len' | 'mass' | 'temp'>('len');
+  const [fromUnit, setFromUnit] = useState('m');
+  const [toUnit, setToUnit] = useState('ft');
+
+  const units: Record<string, Record<string, number>> = {
+    len: { m: 1, ft: 3.28084, in: 39.3701, cm: 100, mm: 1000, yd: 1.09361, mi: 0.000621371 },
+    mass: { kg: 1, lb: 2.20462, oz: 35.274, g: 1000, ton: 0.001 },
+  };
+
+  const convert = () => {
+    const v = Number(val) || 0;
+    if (type === 'temp') {
+      if (fromUnit === 'C' && toUnit === 'F') return (v * 9/5) + 32;
+      if (fromUnit === 'F' && toUnit === 'C') return (v - 32) * 5/9;
+      if (fromUnit === 'C' && toUnit === 'K') return v + 273.15;
+      if (fromUnit === 'K' && toUnit === 'C') return v - 273.15;
+      return v;
+    }
+    const base = v / units[type][fromUnit];
+    return base * units[type][toUnit];
+  };
+
+  const result = convert();
 
   return (
     <div className="flex flex-col gap-6">
       <div className="bg-accent/10 rounded-3xl p-6 border border-accent/20 flex flex-col gap-6">
         <div className="flex bg-[#1a1a2e] p-1 rounded-2xl border border-[#2a2a3a]">
           {['len', 'mass', 'temp'].map(t => (
-            <button key={t} onClick={() => setType(t as any)} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${type === t ? 'bg-accent text-bg-dark shadow-lg shadow-accent/20' : 'text-[#aaaacc] hover:text-gray-300'}`}>{t}</button>
+            <button key={t} onClick={() => { setType(t as any); setFromUnit(t === 'temp' ? 'C' : Object.keys(units[t])[0]); setToUnit(t === 'temp' ? 'F' : Object.keys(units[t])[1]); }} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${type === t ? 'bg-accent text-bg-dark shadow-lg shadow-accent/20' : 'text-[#aaaacc] hover:text-gray-300'}`}>{t}</button>
           ))}
         </div>
         <div className="text-center">
           <p className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1">Conversion Result</p>
-          <h2 className="text-4xl font-black text-white">---</h2>
+          <h2 className="text-4xl font-black text-white">{result.toFixed(4)} <span className="text-xl text-accent">{toUnit}</span></h2>
         </div>
       </div>
-      <div className="relative">
-        <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Value to Convert</label>
-        <input type="number" value={val} onChange={e => setVal(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none transition-all" />
+      <div className="grid gap-4">
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Value to Convert</label>
+          <input type="number" value={val} onChange={e => setVal(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none transition-all" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">From</label>
+            <select value={fromUnit} onChange={e => setFromUnit(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl py-3 px-3 text-white text-sm focus:border-[#00e5ff] outline-none">
+              {type === 'temp' ? ['C', 'F', 'K'].map(u => <option key={u} value={u}>{u}</option>) : Object.keys(units[type]).map(u => <option key={u} value={u}>{u}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">To</label>
+            <select value={toUnit} onChange={e => setToUnit(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl py-3 px-3 text-white text-sm focus:border-[#00e5ff] outline-none">
+              {type === 'temp' ? ['C', 'F', 'K'].map(u => <option key={u} value={u}>{u}</option>) : Object.keys(units[type]).map(u => <option key={u} value={u}>{u}</option>)}
+            </select>
+          </div>
+        </div>
       </div>
+    </div>
+  );
+};
+
+const RebarWeightTool = () => {
+  const [size, setSize] = useState('4');
+  const [length, setLength] = useState('20');
+
+  const rebarData: Record<string, number> = {
+    '3': 0.376, '4': 0.668, '5': 1.043, '6': 1.502, '7': 2.044, '8': 2.670, '9': 3.400, '10': 4.303, '11': 5.313
+  };
+
+  const weightLb = (rebarData[size] || 0) * Number(length);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-accent/10 rounded-3xl p-6 border border-accent/20 flex flex-col gap-6">
+        <div className="text-center">
+          <p className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1">Total Weight</p>
+          <h2 className="text-4xl font-black text-[#00e5ff]">{weightLb.toFixed(2)}<span className="text-xl ml-1">lbs</span></h2>
+          <p className="text-sm font-bold text-white/60 mt-1">{(weightLb * 0.453592).toFixed(2)} kg</p>
+        </div>
+      </div>
+      <div className="grid gap-4">
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Rebar Size (US #)</label>
+          <select value={size} onChange={e => setSize(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none transition-all">
+            {Object.keys(rebarData).map(s => <option key={s} value={s}>#{s} ({(Number(s)*0.125).toFixed(3)}")</option>)}
+          </select>
+        </div>
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Total Length (ft)</label>
+          <input type="number" value={length} onChange={e => setLength(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none transition-all" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FlowRateTool = () => {
+  const [diameter, setDiameter] = useState('2');
+  const [velocity, setVelocity] = useState('5');
+
+  const d = Number(diameter) / 12; // feet
+  const v = Number(velocity); // ft/s
+  const area = Math.PI * Math.pow(d / 2, 2);
+  const flowCFS = area * v;
+  const flowGPM = flowCFS * 448.831;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-accent/10 rounded-3xl p-6 border border-accent/20 flex flex-col gap-6">
+        <div className="text-center">
+          <p className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1">Flow Rate</p>
+          <h2 className="text-4xl font-black text-[#00e5ff]">{flowGPM.toFixed(1)}<span className="text-xl ml-1">GPM</span></h2>
+          <p className="text-sm font-bold text-white/60 mt-1">{flowCFS.toFixed(3)} ft³/s</p>
+        </div>
+      </div>
+      <div className="grid gap-4">
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Pipe Inner Diameter (in)</label>
+          <input type="number" value={diameter} onChange={e => setDiameter(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none transition-all" />
+        </div>
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Flow Velocity (ft/s)</label>
+          <input type="number" value={velocity} onChange={e => setVelocity(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none transition-all" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ShelfSagTool = () => {
+  const [load, setLoad] = useState('50');
+  const [span, setSpan] = useState('36');
+  const [thick, setThick] = useState('0.75');
+  const [depth, setDepth] = useState('12');
+  const [species, setSpecies] = useState('pine');
+
+  const speciesData: Record<string, number> = {
+    pine: 1200000, oak: 1800000, walnut: 1700000, mdf: 500000, plywood: 1000000
+  };
+
+  const w = Number(load);
+  const L = Number(span);
+  const t = Number(thick);
+  const d = Number(depth);
+  const E = speciesData[species];
+
+  const deflection = (5 * w * Math.pow(L, 3)) / (384 * E * (d * Math.pow(t, 3) / 12));
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-accent/10 rounded-3xl p-6 border border-accent/20 flex flex-col gap-6">
+        <div className="text-center">
+          <p className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1">Estimated Sag</p>
+          <h2 className={`text-4xl font-black ${deflection > 0.03 ? 'text-[#ff1744]' : 'text-[#00e5ff]'}`}>
+            {deflection.toFixed(4)}<span className="text-xl ml-1">in</span>
+          </h2>
+          <p className="text-xs font-bold text-white/60 mt-1">
+            {deflection > 0.03 ? 'Noticeable sagging expected' : 'Acceptable deflection'}
+          </p>
+        </div>
+      </div>
+      <div className="grid gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="relative">
+            <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Load (lbs)</label>
+            <input type="number" value={load} onChange={e => setLoad(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none" />
+          </div>
+          <div className="relative">
+            <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Span (in)</label>
+            <input type="number" value={span} onChange={e => setSpan(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="relative">
+            <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Thickness (in)</label>
+            <input type="number" value={thick} onChange={e => setThick(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none" />
+          </div>
+          <div className="relative">
+            <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Depth (in)</label>
+            <input type="number" value={depth} onChange={e => setDepth(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none" />
+          </div>
+        </div>
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Material Species</label>
+          <select value={species} onChange={e => setSpecies(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl py-4 px-5 text-[#ffffff] text-lg font-medium focus:border-[#00e5ff] outline-none">
+            {Object.keys(speciesData).map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LevelTool = () => {
+  const [angle, setAngle] = useState(0);
+
+  useEffect(() => {
+    const handleMotion = (e: DeviceOrientationEvent) => {
+      if (e.beta !== null) setAngle(e.beta);
+    };
+    window.addEventListener('deviceorientation', handleMotion);
+    return () => window.removeEventListener('deviceorientation', handleMotion);
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-8 items-center justify-center py-10">
+      <div className="relative w-64 h-64 rounded-full border-4 border-[#2a2a3a] flex items-center justify-center">
+        <motion.div 
+          animate={{ rotate: angle }}
+          className="w-1 h-48 bg-accent rounded-full"
+          transition={{ type: 'spring', damping: 20 }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="bg-[#0f0f14] px-4 py-2 rounded-xl border border-white/10">
+            <h2 className="text-3xl font-black text-white">{Math.abs(Math.round(angle))}°</h2>
+          </div>
+        </div>
+      </div>
+      <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Inclinometer Mode</p>
+    </div>
+  );
+};
+
+const StopwatchTool = () => {
+  const [time, setTime] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [laps, setLaps] = useState<number[]>([]);
+
+  useEffect(() => {
+    let interval: any;
+    if (running) {
+      interval = setInterval(() => setTime(prev => prev + 10), 10);
+    }
+    return () => clearInterval(interval);
+  }, [running]);
+
+  const formatTime = (ms: number) => {
+    const mins = Math.floor(ms / 60000);
+    const secs = Math.floor((ms % 60000) / 1000);
+    const msecs = Math.floor((ms % 1000) / 10);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${msecs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-accent/10 rounded-3xl p-10 border border-accent/20 text-center">
+        <h2 className="text-6xl font-black text-white font-mono">{formatTime(time)}</h2>
+      </div>
+      <div className="flex gap-4">
+        <button onClick={() => setRunning(!running)} className={`flex-1 py-4 rounded-2xl font-black uppercase tracking-widest transition-all ${running ? 'bg-red-500/20 text-red-500 border border-red-500/30' : 'bg-accent text-bg-dark'}`}>
+          {running ? 'Stop' : 'Start'}
+        </button>
+        <button onClick={() => { if (running) setLaps([time, ...laps]); else { setTime(0); setLaps([]); } }} className="flex-1 py-4 rounded-2xl bg-white/5 text-white font-black uppercase tracking-widest border border-white/10">
+          {running ? 'Lap' : 'Reset'}
+        </button>
+      </div>
+      {laps.length > 0 && (
+        <div className="bg-[#1a1a2e] rounded-3xl border border-[#2a2a3a] max-h-48 overflow-y-auto p-4 flex flex-col gap-2">
+          {laps.map((l, i) => (
+            <div key={i} className="flex justify-between items-center px-4 py-2 bg-white/5 rounded-xl">
+              <span className="text-[10px] font-black text-gray-500 uppercase">Lap {laps.length - i}</span>
+              <span className="text-sm font-mono text-white">{formatTime(l)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const FlashlightTool = () => {
+  const [on, setOn] = useState(false);
+
+  useEffect(() => {
+    if (on) {
+      document.body.style.backgroundColor = '#ffffff';
+    } else {
+      document.body.style.backgroundColor = '';
+    }
+    return () => {
+      document.body.style.backgroundColor = '';
+    };
+  }, [on]);
+
+  return (
+    <div className={`flex flex-col items-center justify-center py-20 transition-all duration-500 ${on ? 'bg-white rounded-3xl' : ''}`}>
+      <button 
+        onClick={() => setOn(!on)}
+        className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${on ? 'bg-gray-100 shadow-2xl scale-110' : 'bg-[#1a1a2e] border border-[#2a2a3a]'}`}
+      >
+        <RefreshCcw className={`w-12 h-12 ${on ? 'text-bg-dark rotate-180' : 'text-accent'} transition-transform duration-500`} />
+      </button>
+      <p className={`mt-8 text-xs font-black uppercase tracking-[0.3em] ${on ? 'text-bg-dark' : 'text-gray-500'}`}>
+        {on ? 'System Max Output' : 'Flashlight Off'}
+      </p>
     </div>
   );
 };
@@ -1721,6 +1998,22 @@ export const ToolDetail: React.FC<ToolDetailProps> = ({ tool, onClose }) => {
         return <UrlEncoderTool />;
       case 'chmod-calc':
         return <ChmodCalcTool />;
+      case 'c3':
+        return <RebarWeightTool />;
+      case 'c4':
+        return <FlowRateTool />;
+      case 'w4':
+        return <ShelfSagTool />;
+      case 'g1':
+        return <UnitConverterTool />;
+      case 'g2':
+        return <LevelTool />;
+      case 'g3':
+        return <StopwatchTool />;
+      case 'g4':
+        return <FlashlightTool />;
+      case 'gemini-assistant':
+        return <GeminiAssistant />;
       default:
         return (
           <div className="bg-card-dark rounded-3xl p-8 border border-gray-800/50 flex flex-col items-center justify-center text-center gap-4 min-h-[300px]">
