@@ -3,6 +3,8 @@ import { Tool } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Share2, MoreVertical, RefreshCcw, Copy, Check, Clock } from 'lucide-react';
 import { GeminiAssistant } from '../components/GeminiAssistant';
+import { SearchBar } from '../components/SearchBar';
+import { SearchBar } from '../components/SearchBar';
 
 interface ToolDetailProps {
   tool: Tool;
@@ -1913,6 +1915,533 @@ const ChmodCalcTool = () => {
   );
 };
 
+const HttpStatusCodesTool = () => {
+  const codes = [
+    { code: 200, name: 'OK', desc: 'Standard response for successful HTTP requests.' },
+    { code: 201, name: 'Created', desc: 'The request has been fulfilled, resulting in the creation of a new resource.' },
+    { code: 204, name: 'No Content', desc: 'The server successfully processed the request and is not returning any content.' },
+    { code: 400, name: 'Bad Request', desc: 'The server cannot or will not process the request due to an apparent client error.' },
+    { code: 401, name: 'Unauthorized', desc: 'Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided.' },
+    { code: 403, name: 'Forbidden', desc: 'The request contained valid data and was understood by the server, but the server is refusing action.' },
+    { code: 404, name: 'Not Found', desc: 'The requested resource could not be found but may be available in the future.' },
+    { code: 405, name: 'Method Not Allowed', desc: 'A request method is not supported for the requested resource.' },
+    { code: 500, name: 'Internal Server Error', desc: 'A generic error message, given when an unexpected condition was encountered.' },
+    { code: 502, name: 'Bad Gateway', desc: 'The server was acting as a gateway or proxy and received an invalid response from the upstream server.' },
+    { code: 503, name: 'Service Unavailable', desc: 'The server cannot handle the request (because it is overloaded or down for maintenance).' },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4">
+      {codes.map((c) => (
+        <div key={c.code} className="bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-4 flex flex-col gap-1">
+          <div className="flex items-center gap-3">
+            <span className={`px-2 py-0.5 rounded text-[10px] font-black ${c.code < 300 ? 'bg-green-500/20 text-green-400' : c.code < 500 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>
+              {c.code}
+            </span>
+            <h3 className="text-white font-bold text-sm">{c.name}</h3>
+          </div>
+          <p className="text-gray-400 text-xs leading-relaxed">{c.desc}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const CurlBuilderTool = () => {
+  const [method, setMethod] = useState('GET');
+  const [url, setUrl] = useState('https://api.example.com/data');
+  const [headers, setHeaders] = useState('Content-Type: application/json');
+  const [data, setData] = useState('');
+
+  const curl = `curl -X ${method} "${url}" ${headers ? `-H "${headers}"` : ''} ${data ? `-d '${data}'` : ''}`.trim().replace(/\s+/g, ' ');
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-accent/10 rounded-3xl p-6 border border-accent/20">
+        <div className="flex justify-between items-center mb-2 px-1">
+          <span className="text-[9px] font-bold text-accent uppercase tracking-widest">Generated cURL</span>
+          <button onClick={() => navigator.clipboard.writeText(curl)} className="text-gray-500 hover:text-white transition-colors"><Copy className="w-3 h-3" /></button>
+        </div>
+        <pre className="bg-black/30 p-4 rounded-2xl font-mono text-[10px] text-white/90 break-all leading-tight border border-white/5 whitespace-pre-wrap">
+          {curl}
+        </pre>
+      </div>
+      <div className="grid gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">Method</label>
+            <select value={method} onChange={e => setMethod(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl py-3 px-3 text-white text-sm focus:border-[#00e5ff] outline-none">
+              {['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">URL</label>
+            <input value={url} onChange={e => setUrl(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl py-3 px-3 text-white text-sm focus:border-[#00e5ff] outline-none" placeholder="https://api.com" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">Header</label>
+          <input value={headers} onChange={e => setHeaders(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl py-3 px-3 text-white text-sm focus:border-[#00e5ff] outline-none" placeholder="Key: Value" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">Data (for POST/PUT)</label>
+          <textarea value={data} onChange={e => setData(e.target.value)} rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl py-3 px-3 text-white text-sm focus:border-[#00e5ff] outline-none font-mono" placeholder='{"id": 1}' />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PasswordGenTool = () => {
+  const [length, setLength] = useState(16);
+  const [useUpper, setUseUpper] = useState(true);
+  const [useNumbers, setUseNumbers] = useState(true);
+  const [useSymbols, setUseSymbols] = useState(true);
+  const [password, setPassword] = useState('');
+
+  const generate = () => {
+    let charset = "abcdefghijklmnopqrstuvwxyz";
+    if (useUpper) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    if (useNumbers) charset += "0123456789";
+    if (useSymbols) charset += "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+    
+    let res = "";
+    for (let i = 0; i < length; i++) {
+      res += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    setPassword(res);
+  };
+
+  useEffect(generate, [length, useUpper, useNumbers, useSymbols]);
+
+  const strength = length < 8 ? 'Weak' : length < 12 ? 'Fair' : length < 16 ? 'Good' : 'Strong';
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-accent/10 rounded-3xl p-6 border border-accent/20">
+        <div className="flex justify-between items-center mb-2 px-1">
+          <span className="text-[9px] font-bold text-accent uppercase tracking-widest">{strength} Password</span>
+          <button onClick={() => navigator.clipboard.writeText(password)} className="text-gray-500 hover:text-white transition-colors"><Copy className="w-3 h-3" /></button>
+        </div>
+        <div className="bg-black/30 p-4 rounded-2xl font-mono text-sm text-white/90 break-all leading-tight border border-white/5 text-center min-h-[60px] flex items-center justify-center">
+          {password}
+        </div>
+      </div>
+      <div className="grid gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between px-1">
+            <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest">Length: {length}</label>
+          </div>
+          <input type="range" min="8" max="64" value={length} onChange={e => setLength(parseInt(e.target.value))} className="w-full h-2 bg-[#1a1a2e] rounded-lg appearance-none cursor-pointer accent-accent" />
+        </div>
+        <div className="grid grid-cols-1 gap-2">
+          {[
+            { label: 'Uppercase', val: useUpper, set: setUseUpper },
+            { label: 'Numbers', val: useNumbers, set: setUseNumbers },
+            { label: 'Symbols', val: useSymbols, set: setUseSymbols },
+          ].map(opt => (
+            <button key={opt.label} onClick={() => opt.set(!opt.val)} className={`flex justify-between items-center px-4 py-3 rounded-xl border transition-all ${opt.val ? 'bg-accent/10 border-accent/30 text-white' : 'bg-[#1a1a2e] border-[#2a2a3a] text-gray-500'}`}>
+              <span className="text-xs font-bold uppercase">{opt.label}</span>
+              {opt.val ? <Check className="w-4 h-4 text-accent" /> : <div className="w-4 h-4" />}
+            </button>
+          ))}
+        </div>
+        <button onClick={generate} className="mt-2 py-4 bg-accent text-bg-dark rounded-2xl font-black uppercase tracking-widest hover:shadow-lg hover:shadow-accent/20 active:scale-95 transition-all">Regenerate</button>
+      </div>
+    </div>
+  );
+};
+
+const JwtTool = () => {
+  const [token, setToken] = useState('');
+  const [header, setHeader] = useState('');
+  const [payload, setPayload] = useState('');
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (!token) {
+      setHeader('');
+      setPayload('');
+      setError(false);
+      return;
+    }
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) throw new Error();
+      setHeader(JSON.stringify(JSON.parse(atob(parts[0])), null, 2));
+      setPayload(JSON.stringify(JSON.parse(atob(parts[1])), null, 2));
+      setError(false);
+    } catch {
+      setError(true);
+    }
+  }, [token]);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="relative">
+        <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">JWT Token</label>
+        <textarea value={token} onChange={e => setToken(e.target.value)} rows={4} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-4 text-[#ffffff] text-xs font-mono outline-none focus:border-[#00e5ff] transition-all resize-none" placeholder="Paste eyJhbG..." />
+      </div>
+      {error && <p className="text-[10px] text-red-400 px-1 font-mono">Invalid JWT format</p>}
+      {!error && header && (
+        <div className="grid gap-4">
+          <div className="bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-4">
+            <p className="text-[9px] font-black text-pink-400 uppercase tracking-widest mb-2">Header</p>
+            <pre className="text-[10px] font-mono text-white/80 overflow-x-auto">{header}</pre>
+          </div>
+          <div className="bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-4">
+            <p className="text-[9px] font-black text-accent uppercase tracking-widest mb-2">Payload</p>
+            <pre className="text-[10px] font-mono text-white/80 overflow-x-auto">{payload}</pre>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const CaesarCipherTool = () => {
+  const [text, setText] = useState('');
+  const [shift, setShift] = useState(13);
+
+  const process = (str: string, s: number) => {
+    return str.replace(/[a-z]/gi, (char) => {
+      const start = char <= 'Z' ? 65 : 97;
+      return String.fromCharCode(((char.charCodeAt(0) - start + s) % 26) + start);
+    });
+  };
+
+  const result = process(text, shift);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-accent/10 rounded-3xl p-6 border border-accent/20">
+        <div className="flex justify-between items-center mb-2 px-1">
+          <span className="text-[9px] font-bold text-accent uppercase tracking-widest">Result (Shift {shift})</span>
+          <button onClick={() => navigator.clipboard.writeText(result)} className="text-gray-500 hover:text-white transition-colors"><Copy className="w-3 h-3" /></button>
+        </div>
+        <div className="bg-black/30 p-4 rounded-2xl font-mono text-sm text-white/90 break-all leading-tight border border-white/5 min-h-[80px]">
+          {result || 'Waiting for input...'}
+        </div>
+      </div>
+      <div className="grid gap-4">
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Input Text</label>
+          <textarea value={text} onChange={e => setText(e.target.value)} rows={4} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-4 text-[#ffffff] text-sm outline-none focus:border-[#00e5ff] transition-all resize-none" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">Shift Amount: {shift}</label>
+          <input type="range" min="1" max="25" value={shift} onChange={e => setShift(parseInt(e.target.value))} className="w-full h-2 bg-[#1a1a2e] rounded-lg appearance-none cursor-pointer accent-accent" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ColorPickerTool = () => {
+  const [hex, setHex] = useState('#00e5ff');
+
+  const hexToRgb = (h: string) => {
+    const r = parseInt(h.slice(1, 3), 16);
+    const g = parseInt(h.slice(3, 5), 16);
+    const b = parseInt(h.slice(5, 7), 16);
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="h-40 rounded-3xl shadow-2xl transition-colors duration-300 border-4 border-[#2a2a3a]" style={{ backgroundColor: hex }} />
+      <div className="grid gap-4">
+        <div className="relative">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest mb-1.5 block ml-1">Hex Color</label>
+          <div className="flex gap-2">
+            <input type="color" value={hex} onChange={e => setHex(e.target.value)} className="w-16 h-14 bg-transparent border-none cursor-pointer" />
+            <input value={hex} onChange={e => setHex(e.target.value)} className="flex-1 bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl px-5 text-[#ffffff] text-lg font-mono outline-none focus:border-[#00e5ff]" />
+          </div>
+        </div>
+        <div className="bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-4 flex justify-between items-center">
+          <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">RGB</span>
+          <span className="text-sm font-mono text-white">{hexToRgb(hex)}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const GradientGenTool = () => {
+  const [c1, setC1] = useState('#00e5ff');
+  const [c2, setC2] = useState('#6366f1');
+  const [angle, setAngle] = useState(135);
+
+  const css = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="h-40 rounded-3xl border-4 border-[#2a2a3a]" style={{ background: css }} />
+      <div className="bg-black/30 p-4 rounded-2xl font-mono text-[10px] text-accent/80 break-all leading-tight border border-white/5 flex justify-between items-center">
+        <code>background: {css};</code>
+        <button onClick={() => navigator.clipboard.writeText(`background: ${css};`)} className="text-gray-500 hover:text-white"><Copy className="w-3 h-3" /></button>
+      </div>
+      <div className="grid gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <input type="color" value={c1} onChange={e => setC1(e.target.value)} className="w-full h-12 bg-transparent border-none cursor-pointer" />
+          <input type="color" value={c2} onChange={e => setC2(e.target.value)} className="w-full h-12 bg-transparent border-none cursor-pointer" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">Angle: {angle}°</label>
+          <input type="range" min="0" max="360" value={angle} onChange={e => setAngle(parseInt(e.target.value))} className="w-full h-2 bg-[#1a1a2e] rounded-lg appearance-none cursor-pointer accent-accent" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TextDiffTool = () => {
+  const [t1, setT1] = useState('');
+  const [t2, setT2] = useState('');
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">Text A</label>
+          <textarea value={t1} onChange={e => setT1(e.target.value)} rows={6} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl p-3 text-white text-xs outline-none focus:border-[#00e5ff] resize-none" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[9px] font-bold text-[#aaaacc] uppercase tracking-widest ml-1">Text B</label>
+          <textarea value={t2} onChange={e => setT2(e.target.value)} rows={6} className="w-full bg-[#1a1a2e] border border-[#2a2a3a] rounded-xl p-3 text-white text-xs outline-none focus:border-[#00e5ff] resize-none" />
+        </div>
+      </div>
+      <div className="bg-[#1a1a2e] border border-[#2a2a3a] rounded-2xl p-4">
+        <p className="text-[9px] font-black text-accent uppercase tracking-widest mb-2">Analysis</p>
+        <div className="text-[10px] font-mono text-white/70 space-y-1">
+          <p>Chars: {t1.length} vs {t2.length} ({Math.abs(t1.length - t2.length)} diff)</p>
+          <p>Words: {t1.split(/\s+/).filter(Boolean).length} vs {t2.split(/\s+/).filter(Boolean).length}</p>
+          <p>Status: {t1 === t2 ? 'Identical' : 'Different'}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MimeTypesTool = () => {
+  const mimeTypes = [
+    { ext: '.json', type: 'application/json' },
+    { ext: '.js', type: 'application/javascript' },
+    { ext: '.html', type: 'text/html' },
+    { ext: '.css', type: 'text/css' },
+    { ext: '.png', type: 'image/png' },
+    { ext: '.jpg', type: 'image/jpeg' },
+    { ext: '.svg', type: 'image/svg+xml' },
+    { ext: '.pdf', type: 'application/pdf' },
+    { ext: '.zip', type: 'application/zip' },
+    { ext: '.txt', type: 'text/plain' },
+  ];
+
+  return (
+    <div className="bg-[#1a1a2e] rounded-3xl border border-[#2a2a3a] overflow-hidden">
+      <table className="w-full text-left text-xs border-collapse">
+        <thead className="bg-[#1a1a2e] border-b border-[#2a2a3a]">
+          <tr>
+            <th className="p-4 text-[9px] font-black text-[#aaaacc] uppercase tracking-widest">Extension</th>
+            <th className="p-4 text-[9px] font-black text-[#aaaacc] uppercase tracking-widest">MIME Type</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[#2a2a3a]/50">
+          {mimeTypes.map(m => (
+            <tr key={m.ext} className="hover:bg-white/5 transition-colors">
+              <td className="p-4 font-bold text-white">{m.ext}</td>
+              <td className="p-4 text-accent font-mono">{m.type}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const TermuxRefTool = () => {
+  const [search, setSearch] = useState('');
+  const [openSection, setOpenSection] = useState<number | null>(0);
+  const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
+
+  const sections = [
+    {
+      title: 'Package Management',
+      color: '#00e5ff',
+      commands: [
+        { cmd: 'pkg update && pkg upgrade', desc: 'Update repositories and packages' },
+        { cmd: 'pkg install <name>', desc: 'Install a new package' },
+        { cmd: 'pkg uninstall <name>', desc: 'Remove a package' },
+        { cmd: 'pkg list-installed', desc: 'List all installed packages' },
+        { cmd: 'pkg search <query>', desc: 'Search for available packages' },
+      ]
+    },
+    {
+      title: 'File System',
+      color: '#00e676',
+      commands: [
+        { cmd: '~/ = /data/data/com.termux/files/home', desc: 'Default home directory' },
+        { cmd: '/sdcard or ~/storage/shared', desc: 'Internal Android storage' },
+        { cmd: 'termux-setup-storage', desc: 'Grant storage permissions' },
+        { cmd: 'ls, cd, cp, mv, rm, mkdir, cat, nano', desc: 'Standard Unix file operations' },
+      ]
+    },
+    {
+      title: 'Development',
+      color: '#d1c4e9',
+      commands: [
+        { cmd: 'pkg install nodejs-lts', desc: 'Install Node.js (LTS version)' },
+        { cmd: 'pkg install python', desc: 'Install Python 3' },
+        { cmd: 'pkg install git', desc: 'Install Git version control' },
+        { cmd: 'npm install -g <package>', desc: 'Install global NPM package' },
+        { cmd: 'pip install <package> --break-system-packages', desc: 'Install Python package' },
+      ]
+    },
+    {
+      title: 'Networking',
+      color: '#ff9800',
+      commands: [
+        { cmd: 'pkg install curl wget nmap', desc: 'Install essential network tools' },
+        { cmd: 'curl -X POST url -d \'data\'', desc: 'Perform HTTP POST request' },
+        { cmd: 'wget https://example.com/file', desc: 'Download a file from URL' },
+        { cmd: 'nmap -sV 192.168.1.1', desc: 'Scan for open ports and services' },
+      ]
+    },
+    {
+      title: 'Proot / Distro',
+      color: '#ff1744',
+      commands: [
+        { cmd: 'pkg install proot-distro', desc: 'Install Linux distro manager' },
+        { cmd: 'proot-distro install debian', desc: 'Install Debian Linux' },
+        { cmd: 'proot-distro login debian', desc: 'Enter Debian shell' },
+        { cmd: 'proot-distro list', desc: 'List available distributions' },
+      ]
+    },
+    {
+      title: 'ADB & Shizuku',
+      color: '#ffd600',
+      commands: [
+        { cmd: 'pkg install android-tools', desc: 'Install ADB and Fastboot' },
+        { cmd: 'adb devices', desc: 'List connected ADB devices' },
+        { cmd: 'adb shell', desc: 'Enter remote Android shell' },
+        { cmd: 'rish', desc: 'Shizuku shell (requires Shizuku app)' },
+        { cmd: 'adb install app.apk', desc: 'Install APK via ADB' },
+        { cmd: 'adb push file /sdcard/', desc: 'Send file to Android storage' },
+      ]
+    },
+    {
+      title: 'Process Management',
+      color: '#2979ff',
+      commands: [
+        { cmd: 'jobs, bg, fg', desc: 'Manage background jobs' },
+        { cmd: 'kill <pid>', desc: 'Terminate process by ID' },
+        { cmd: 'pkill <name>', desc: 'Terminate process by name' },
+        { cmd: 'Ctrl+C', desc: 'Stop current process' },
+        { cmd: 'Ctrl+Z', desc: 'Suspend current process' },
+      ]
+    },
+    {
+      title: 'Tips & Shortcuts',
+      color: '#f06292',
+      commands: [
+        { cmd: 'Volume Up', desc: 'Equivalent to Special key' },
+        { cmd: 'Ctrl+A', desc: 'Move cursor to start of line' },
+        { cmd: 'Ctrl+E', desc: 'Move cursor to end of line' },
+        { cmd: 'Ctrl+U', desc: 'Clear the entire line' },
+        { cmd: 'Long press', desc: 'Open context/paste menu' },
+        { cmd: '~/.bashrc', desc: 'Config file for aliases' },
+        { cmd: 'alias ll=\'ls -la\'', desc: 'Create a custom shortcut' },
+      ]
+    }
+  ];
+
+  const handleCopy = (cmd: string, id: string) => {
+    navigator.clipboard.writeText(cmd);
+    setCopiedIndex(id);
+    setTimeout(() => setCopiedIndex(null), 800);
+  };
+
+  const filteredSections = sections.map(s => ({
+    ...s,
+    commands: s.commands.filter(c => 
+      c.cmd.toLowerCase().includes(search.toLowerCase()) || 
+      c.desc.toLowerCase().includes(search.toLowerCase()) ||
+      s.title.toLowerCase().includes(search.toLowerCase())
+    )
+  })).filter(s => s.commands.length > 0);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="relative">
+        <SearchBar value={search} onChange={setSearch} placeholder="Search commands..." />
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {filteredSections.map((section, sIdx) => (
+          <div key={section.title} className="bg-[#1a1a2e] rounded-3xl border border-[#2a2a3a] overflow-hidden">
+            <button 
+              onClick={() => setOpenSection(openSection === sIdx ? null : sIdx)}
+              className="w-full px-6 py-4 flex items-center justify-between transition-colors hover:bg-white/5"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: section.color }} />
+                <h3 className="text-[11px] font-black uppercase tracking-widest" style={{ color: section.color }}>{section.title}</h3>
+              </div>
+              <motion.div animate={{ rotate: openSection === sIdx ? 180 : 0 }}>
+                <MoreVertical className="w-4 h-4 text-gray-600" />
+              </motion.div>
+            </button>
+
+            <AnimatePresence>
+              {(openSection === sIdx || search) && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="px-4 pb-4 overflow-hidden"
+                >
+                  <div className="space-y-2 pt-2 border-t border-white/5">
+                    {section.commands.map((c, cIdx) => {
+                      const id = `${sIdx}-${cIdx}`;
+                      return (
+                        <button 
+                          key={id}
+                          onClick={() => handleCopy(c.cmd, id)}
+                          className="w-full text-left p-3 rounded-2xl bg-black/20 border border-white/5 hover:border-accent/30 transition-all group relative overflow-hidden"
+                        >
+                          <AnimatePresence>
+                            {copiedIndex === id && (
+                              <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-accent/10 pointer-events-none"
+                              />
+                            )}
+                          </AnimatePresence>
+                          <div className="flex justify-between items-start mb-1">
+                            <code className="text-[11px] font-mono text-white/90 break-all leading-tight">{c.cmd}</code>
+                            {copiedIndex === id ? (
+                              <Check className="w-3 h-3 text-accent shrink-0 mt-0.5" />
+                            ) : (
+                              <Copy className="w-3 h-3 text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5" />
+                            )}
+                          </div>
+                          <p className="text-[9px] font-bold text-gray-500 uppercase tracking-tight">{c.desc}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const ToolDetail: React.FC<ToolDetailProps> = ({ tool, onClose }) => {
   const container = {
     hidden: { opacity: 0 },
@@ -1998,6 +2527,26 @@ export const ToolDetail: React.FC<ToolDetailProps> = ({ tool, onClose }) => {
         return <UrlEncoderTool />;
       case 'chmod-calc':
         return <ChmodCalcTool />;
+      case 'http-status':
+        return <HttpStatusCodesTool />;
+      case 'curl-builder':
+        return <CurlBuilderTool />;
+      case 'mime-types':
+        return <MimeTypesTool />;
+      case 'password-gen':
+        return <PasswordGenTool />;
+      case 'jwt-tool':
+        return <JwtTool />;
+      case 'caesar-cipher':
+        return <CaesarCipherTool />;
+      case 'color-picker':
+        return <ColorPickerTool />;
+      case 'gradient-gen':
+        return <GradientGenTool />;
+      case 'text-diff':
+        return <TextDiffTool />;
+      case 'termux-ref':
+        return <TermuxRefTool />;
       case 'c3':
         return <RebarWeightTool />;
       case 'c4':

@@ -226,6 +226,40 @@ export const TOOLS: Tool[] = [
     color: '#00e5ff', 
     category: 'Dev' 
   },
+  { 
+    id: 'http-status', 
+    name: 'HTTP Status Codes', 
+    category: 'Dev', 
+    description: 'HTTP response code reference', 
+    longDescription: 'A complete reference for HTTP response status codes. Quickly look up the meaning of standard codes across Informational (1xx), Success (2xx), Redirection (3xx), Client Error (4xx), and Server Error (5xx) categories.',
+    icon: '🌐', 
+    color: '#6366f1' 
+  },
+  { 
+    id: 'curl-builder', 
+    name: 'cURL Builder', 
+    category: 'Dev', 
+    description: 'Build curl commands visually', 
+    longDescription: 'Generate complex cURL commands through an intuitive interface. Add headers, specify methods (GET, POST, etc.), and include data payloads to get a copy-paste ready command for your terminal.',
+    icon: '⚡', 
+    color: '#6366f1' 
+  },
+  { 
+    id: 'mime-types', 
+    name: 'MIME Types', 
+    category: 'Dev', 
+    description: 'Content type reference', 
+    longDescription: 'Browse common Multipurpose Internet Mail Extensions (MIME) types. Find the correct content-type header for various file extensions including images, application data, text, and video.',
+    icon: '📄', 
+    color: '#6366f1' 
+  },
+  { id: "password-gen", name: "Password Generator", category: "Dev", description: "Secure password generator with strength meter", icon: "🔐", color: "#6366f1", longDescription: "Generate strong, secure passwords with customizable length and character types. Includes a real-time strength meter to evaluate the complexity of your generated passwords." },
+  { id: "jwt-tool", name: "JWT Decoder", category: "Dev", description: "Decode and inspect JWT tokens", icon: "🔑", color: "#6366f1", longDescription: "Easily decode JSON Web Tokens (JWT) to inspect their header, payload, and signature. Perfect for debugging authentication flows and verifying token claims." },
+  { id: "caesar-cipher", name: "Caesar Cipher", category: "Dev", description: "ROT13 and shift cipher encoder", icon: "🔒", color: "#6366f1", longDescription: "A classic substitution cipher tool. Encode or decode text using the Caesar cipher method with adjustable shifts, including the popular ROT13 variant." },
+  { id: "color-picker", name: "Color Converter", category: "Dev", description: "HEX, RGB, HSL color converter", icon: "🎨", color: "#6366f1", longDescription: "Convert colors between HEX, RGB, and HSL formats instantly. Features an interactive color preview and easy-copy values for web development." },
+  { id: "gradient-gen", name: "Gradient Generator", category: "Dev", description: "CSS gradient builder with preview", icon: "🌈", color: "#6366f1", longDescription: "Create beautiful CSS linear gradients with a live visual preview. Adjust colors and angles, and get the exact CSS code for your project." },
+  { id: "text-diff", name: "Text Diff", category: "Dev", description: "Compare two text blocks side by side", icon: "📝", color: "#6366f1", longDescription: "Compare two pieces of text to identify differences. Features a side-by-side view with highlighting for added, removed, and modified segments." },
+  { id: "termux-ref", name: "Termux Cheatsheet", category: "Dev", description: "Termux and Android terminal command reference", icon: "📱", color: "#6366f1", longDescription: "A comprehensive reference guide for Termux users. Includes essential commands for package management, file system navigation, development environments, and networking on Android." },
 
   // AI/ML
   { 
