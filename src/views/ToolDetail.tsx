@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Share2, MoreVertical, RefreshCcw, Copy, Check, Clock } from 'lucide-react';
 import { GeminiAssistant } from '../components/GeminiAssistant';
 import { SearchBar } from '../components/SearchBar';
-import { SearchBar } from '../components/SearchBar';
 
 interface ToolDetailProps {
   tool: Tool;
@@ -2373,8 +2372,12 @@ const TermuxRefTool = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="relative">
-        <SearchBar value={search} onChange={setSearch} placeholder="Search commands..." />
+        <SearchBar 
+          value={search} 
+          onChange={setSearch} 
+        />
       </div>
+
 
       <div className="flex flex-col gap-3">
         {filteredSections.map((section, sIdx) => (
