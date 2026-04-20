@@ -1,94 +1,96 @@
 # DIY Engineering Toolbox
 
-A lightweight React + Vite toolbox for common engineering calculations and an AI assistant.
+A modern, high-performance React + Vite toolbox for common engineering calculations, featuring persistent storage and an integrated AI assistant.
 
 ## Overview
 
-This project includes useful engineering utilities in a single-page application:
+DIY Engineering Toolbox provides a suite of essential utilities for engineers, hobbyists, and makers in a polished, responsive single-page application.
 
-- Ohm's Law Calculator
-- Resistor Color Code Reader
-- Voltage Divider Calculator
-- LED Resistor Calculator
-- Torque Calculator
-- Gear Ratio Calculator
-- Unit Converter
-- Concrete Volume Calculator
-- Slope Calculator
-- Gemini AI Assistant
+### Key Tools
+- **Electrical:** Ohm's Law, Resistor Color Code, Voltage Divider, LED Resistor.
+- **Mechanical:** Torque Calculator, Gear Ratio.
+- **Civil:** Concrete Volume, Slope Calculator.
+- **General:** Unit Converter.
+- **AI Assistant:** Gemini Engineering Assistant for complex formulas and material science.
 
-The app is built with:
-
-- React 19
-- Vite
-- Tailwind CSS
-- Lucide Icons
-- Google Gemini GenAI integration
+### Tech Stack
+- **Framework:** React 18 (TypeScript)
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS 4.0
+- **Animations:** Framer Motion
+- **Icons:** Lucide React
+- **AI:** Google Gemini SDK (@google/genai)
+- **Persistence:** LocalStorage with custom hooks
 
 ## Features
 
-- Browse tools by category
-- Search and pin frequently used calculators
-- Switch between tool views
-- Ask engineering questions using Gemini Assistant
+- **Categorized Browsing:** Quickly find tools via category pills (Electrical, Mechanical, etc.).
+- **Smart Search:** Instant filtering of tools by name or description.
+- **Pinned Tools:** Save your most-used calculators to the home screen for quick access.
+- **View-Based Navigation:** Clean separation between the Home dashboard, detailed Tool views, and Settings.
+- **Responsive Design:** Optimized for both mobile and desktop use with a modern "App-like" feel.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (recommended 18+)
-- npm
+- Node.js (18.x or higher)
+- npm or yarn
 
-### Install dependencies
+### Installation
 
-```bash
-npm install
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/drewdroid86/Diy-Engineering-Toolbox.git
+   cd Diy-Engineering-Toolbox
+   ```
 
-### Configure environment
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Create a `.env.local` or `.env` file in the project root and add your Gemini API key:
+### Configuration
+
+Create a `.env` file in the project root and add your Gemini API key:
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-> The AI assistant feature requires a valid `GEMINI_API_KEY`.
+> **Note:** The AI Assistant requires a valid Google Gemini API key.
 
-### Run locally
+### Development
+
+Run the development server:
 
 ```bash
 npm run dev
 ```
 
-Open the local server URL shown in the terminal, usually `http://localhost:3000`.
-
-## Build and Preview
-
-Build the production bundle:
-
-```bash
-npm run build
-```
-
-Preview the production build locally:
-
-```bash
-npm run preview
-```
+The app will be available at `http://localhost:3000`.
 
 ## Project Structure
 
-- `src/App.tsx` — main application and tool routing
-- `src/main.tsx` — app entry point
-- `src/lib/gemini.ts` — Gemini API wrapper
-- `src/components/` — individual calculator components
-- `src/index.css` — global styles
-- `vite.config.ts` — Vite configuration
+```text
+src/
+├── components/      # Reusable UI components (BottomNav, SearchBar, ToolCard, etc.)
+├── hooks/           # Custom React hooks (usePersistence for LocalStorage)
+├── views/           # Main application views (Home, ToolDetail, Settings)
+├── data.ts          # Centralized tool definitions and metadata
+├── types.ts         # TypeScript interfaces and types
+├── App.tsx          # Main application logic and state management
+└── main.tsx         # Entry point
+```
 
-## Notes
+## Available Scripts
 
-- `npm run lint` runs TypeScript type checking
-- `npm test` runs Vitest tests
+- `npm run dev`: Starts the Vite development server.
+- `npm run build`: Compiles the application for production.
+- `npm run preview`: Locally previews the production build.
+- `npm run lint`: Runs ESLint for code quality checks.
+- `npm test`: Executes the test suite using Vitest.
 
-If you want, I can also add a short deployment section for Vercel or Netlify.
+## License
+
+MIT
