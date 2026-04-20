@@ -10,3 +10,4 @@ coverage/
 # gemini-cli
 .gemini/
 gha-creds-*.json
+__pycache__/
