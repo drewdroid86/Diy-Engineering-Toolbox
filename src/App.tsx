@@ -1,137 +1,55 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import React, { useState } from 'react';
+import { Home } from './views/Home';
+import { Settings } from './views/Settings';
+import { ToolDetail } from './views/ToolDetail';
+import { BottomNav } from './components/BottomNav';
+import { Tool } from './types';
+import { AnimatePresence, motion } from 'framer-motion';
 
-import { useState, ReactNode } from 'react';
-import { Info, ArrowLeft, Star, Search } from 'lucide-react';
-import { ResistorColorCodeCalculator } from './components/ResistorColorCodeCalculator';
-import { OhmsLawCalculator } from './components/OhmsLawCalculator';
-import { UnitConverter } from './components/UnitConverter';
-import { VoltageDividerCalculator } from './components/VoltageDividerCalculator';
-import { LEDResistorCalculator } from './components/LEDResistorCalculator';
-import { GearRatioCalculator } from './components/GearRatioCalculator';
-import { ConcreteVolumeCalculator } from './components/ConcreteVolumeCalculator';
-import { SlopeCalculator } from './components/SlopeCalculator';
-import { GeminiAssistant } from './components/GeminiAssistant';
-import { TorqueCalculator } from './components/TorqueCalculator';
-import { TOOLS, FORMULAS, ToolCategory } from './data/tools';
-
-const toolComponents: Record<string, ReactNode> = {
-  "Ohm's Law": <OhmsLawCalculator />,
-  "Resistor Color Code": <ResistorColorCodeCalculator />,
-  "Unit Converter": <UnitConverter />,
-  "Voltage Divider": <VoltageDividerCalculator />,
-  "LED Resistor": <LEDResistorCalculator />,
-  "Gear Ratio": <GearRatioCalculator />,
-  "Concrete Volume": <ConcreteVolumeCalculator />,
-  "Slope Calculator": <SlopeCalculator />,
-  "Torque Calculator": <TorqueCalculator />,
-  "Gemini Assistant": <GeminiAssistant />,
-};
-
-export default function App() {
-  const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('Electrical');
-  const [selectedTool, setSelectedTool] = useState<string | null>(null);
-  const [pinnedTools, setPinnedTools] = useState<string[]>(["Ohm's Law"]);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const lowercasedQuery = searchQuery.toLowerCase();
-
-  const togglePin = (toolName: string) => {
-    setPinnedTools(prev => prev.includes(toolName) ? prev.filter(t => t !== toolName) : [...prev, toolName]);
-  };
-
-  const renderTool = () => {
-    if (selectedTool && toolComponents[selectedTool]) {
-      return toolComponents[selectedTool];
-    }
-    return <p className="text-muted-foreground">Select a tool to begin.</p>;
-  };
+function App() {
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+  const [activeTab, setActiveTab] = useState('home');
 
   return (
-    <div className="min-h-screen font-sans bg-background text-text">
-      <header className="p-6 border-b border-border flex justify-between items-center bg-card">
-        <h1 className="text-2xl font-bold tracking-tight">Engineer's Toolbox</h1>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-            <input type="text" placeholder="Search tools..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-2 rounded-full bg-input focus:outline-none focus:ring-2 focus:ring-ring border border-border" />
-          </div>
-          <button className="p-2 rounded-full hover:bg-muted"><Info className="w-5 h-5" /></button>
-        </div>
-      </header>
-
-      <div className="flex">
-        <nav className="w-64 p-6 border-r border-border h-[calc(100vh-89px)] overflow-y-auto sticky top-[89px]">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4 tracking-wider">Frequently Used</h3>
-          <ul className="space-y-2 mb-8">
-            {pinnedTools.map(tool => (
-              <li key={tool}>
-                <button 
-                  onClick={() => setSelectedTool(tool)}
-                  className="w-full text-left text-sm font-medium p-3 bg-card border border-border rounded-lg hover:border-accent transition"
-                >
-                  {tool}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase mb-4 tracking-wider">Categories</h3>
-          <ul className="space-y-2">
-            {(Object.keys(TOOLS) as ToolCategory[]).map((category) => (
-              <li key={category}>
-                <button onClick={() => { setSelectedCategory(category); setSelectedTool(null); }} className={`w-full text-left p-3 rounded-lg font-medium transition ${selectedCategory === category ? 'bg-accent text-accent-foreground' : 'hover:bg-muted'}`}>{category}</button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <main className="flex-1 p-8">
-          {selectedTool ? (
-            <div>
-              <button onClick={() => setSelectedTool(null)} className="flex items-center gap-2 text-muted-foreground hover:text-text mb-6 transition"><ArrowLeft className="w-4 h-4" /> Back to Toolbox</button>
-              <div className="max-w-4xl mx-auto">
-                {renderTool()}
-              </div>
-            </div>
+    <div className="min-h-screen bg-bg-dark font-sans overflow-x-hidden">
+      <div className="mx-auto max-w-7xl min-h-screen relative w-full px-4 sm:px-6 lg:px-8">
+        <AnimatePresence mode="wait">
+          {activeTab === 'settings' ? (
+            <motion.div
+              key="settings"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Settings />
+            </motion.div>
           ) : (
-            <>
-              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                <div className="w-2 h-6 bg-accent rounded-full" />
-                {selectedCategory} Tools
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {TOOLS[selectedCategory].filter(t => t.name.toLowerCase().includes(lowercasedQuery)).map((tool) => (
-                  <div key={tool.name} className="bg-card text-card-foreground p-6 rounded-xl shadow-lg border border-border hover:border-accent transition cursor-pointer relative group">
-                    <button onClick={() => togglePin(tool.name)} className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition"><Star className={`w-5 h-5 ${pinnedTools.includes(tool.name) ? 'fill-yellow-400 text-yellow-400 opacity-100' : 'text-muted-foreground'}`} /></button>
-                    <div onClick={() => setSelectedTool(tool.name)}>
-                      <div className="mb-4 text-accent bg-accent/10 w-12 h-12 flex items-center justify-center rounded-lg">{tool.icon}</div>
-                      <h3 className="text-lg font-medium group-hover:text-accent transition">{tool.name}</h3>
-                      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{tool.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                <div className="w-2 h-6 bg-border rounded-full" />
-                Engineering Formulas
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(searchQuery ? Object.values(FORMULAS).flat() : FORMULAS[selectedCategory])
-                  .filter(f => f.name.toLowerCase().includes(lowercasedQuery))
-                  .map(f => (
-                    <div key={f.name} className="bg-card/50 text-card-foreground p-6 rounded-xl shadow-sm border border-border">
-                      <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-2">{f.name}</h4>
-                      <p className="font-mono text-lg text-accent">{f.formula}</p>
-                    </div>
-                  ))}
-              </div>
-            </>
+            <motion.div
+              key="home"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Home onOpenTool={(tool) => setSelectedTool(tool)} />
+            </motion.div>
           )}
-        </main>
+        </AnimatePresence>
+        
+        <AnimatePresence>
+          {selectedTool && (
+            <ToolDetail 
+              tool={selectedTool} 
+              onClose={() => setSelectedTool(null)} 
+            />
+          )}
+        </AnimatePresence>
+
+        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     </div>
   );
 }
+
+export default App;
