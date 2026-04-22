@@ -1,14 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home } from './views/Home';
 import { Settings } from './views/Settings';
 import { ToolDetail } from './views/ToolDetail';
 import { BottomNav } from './components/BottomNav';
 import { Tool } from './types';
+import { TOOLS } from './data';
 import { AnimatePresence, motion } from 'framer-motion';
 
 function App() {
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
   const [activeTab, setActiveTab] = useState('home');
+
+  // Migration logic for tool IDs
+  useEffect(() => {
+    const validIds = new Set(TOOLS.map(t => t.id));
+    
+    ['pinned_tools', 'recent_tools'].forEach(key => {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        try {
+          const ids = JSON.parse(saved);
+          if (Array.isArray(ids)) {
+            const filtered = ids.filter(id => validIds.has(id));
+            if (filtered.length !== ids.length) {
+              localStorage.setItem(key, JSON.stringify(filtered));
+            }
+          }
+        } catch (e) {
+          console.error(`Failed to migrate ${key}`, e);
+        }
+      }
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-bg-dark font-sans overflow-x-hidden">

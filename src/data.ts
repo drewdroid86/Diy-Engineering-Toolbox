@@ -68,7 +68,7 @@ export const TOOLS: Tool[] = [
     category: 'Mechanical' 
   },
   { 
-    id: 'pressure-calc', 
+    id: 'rpm-speed', 
     name: 'RPM & Speed', 
     description: 'Vehicle & Pulley RPM calc', 
     longDescription: 'A dual-mode rotation calculator. Switch between Vehicle mode to calculate engine RPM from speed and tire size, or Pulley mode to determine output speeds in belt-driven systems.',
@@ -77,7 +77,7 @@ export const TOOLS: Tool[] = [
     category: 'Mechanical' 
   },
   { 
-    id: 'beam-deflection', 
+    id: 'spring-rate', 
     name: 'Spring Rate', 
     description: 'Coil spring force constant', 
     longDescription: 'Determine the stiffness of a compression spring based on its physical geometry. Uses the standard helical spring rate formula considering wire diameter, coil diameter, and active coil count.',
@@ -88,7 +88,7 @@ export const TOOLS: Tool[] = [
 
   // Civil
   { 
-    id: 'concrete-mix', 
+    id: 'concrete-calc', 
     name: 'Concrete Volume', 
     description: 'Volume & bag count estimator', 
     longDescription: 'Estimate materials for concrete slabs and footings. Input length, width, and depth to calculate the total cubic yardage required and the number of standard 60lb bags needed for the job.',
@@ -106,7 +106,7 @@ export const TOOLS: Tool[] = [
     category: 'Civil' 
   },
   { 
-    id: 'c3', 
+    id: 'rebar-weight', 
     name: 'Rebar Weight', 
     description: 'Length to mass converter', 
     longDescription: 'Calculate the total weight of steel reinforcement bars. Select standard rebar sizes and input lengths to get weight estimates in pounds or kilograms for structural planning.',
@@ -115,11 +115,47 @@ export const TOOLS: Tool[] = [
     category: 'Civil' 
   },
   { 
-    id: 'c4', 
+    id: 'flow-rate', 
     name: 'Flow Rate', 
     description: 'Pipe capacity & velocity', 
     longDescription: 'Hydraulic calculator for determining pipe flow characteristics. Estimate water velocity and volumetric flow rate based on pipe diameter and pressure gradients or gravity fall.',
     icon: '🌊', 
+    color: '#29b6f6', 
+    category: 'Civil' 
+  },
+  { 
+    id: 'beam-load', 
+    name: 'Beam Load', 
+    description: 'Bending & Deflection', 
+    longDescription: 'Calculate structural loads, bending moments, and deflection for simple beams. Essential for structural framing and material selection in construction projects.',
+    icon: '🏗️', 
+    color: '#29b6f6', 
+    category: 'Civil' 
+  },
+  { 
+    id: 'pipe-friction', 
+    name: 'Pipe Friction', 
+    description: 'Hazen-Williams Head Loss', 
+    longDescription: 'Calculate pressure drop in pipes due to friction using the Hazen-Williams equation. Supports various pipe materials and diameters for hydraulic systems.',
+    icon: '🚰', 
+    color: '#29b6f6', 
+    category: 'Civil' 
+  },
+  { 
+    id: 'asphalt-volume', 
+    name: 'Asphalt Volume', 
+    description: 'Paving Tonnage Estimator', 
+    longDescription: 'Estimate the amount of asphalt required for a paving project. Calculate total tonnage based on area, desired thickness, and mix density.',
+    icon: '🛣️', 
+    color: '#29b6f6', 
+    category: 'Civil' 
+  },
+  { 
+    id: 'soil-bearing', 
+    name: 'Soil Bearing', 
+    description: 'Foundation Load Capacity', 
+    longDescription: 'Basic estimator for soil bearing capacity and footing design. Helps determine appropriate footing sizes based on soil type and structural loads.',
+    icon: '🏜️', 
     color: '#29b6f6', 
     category: 'Civil' 
   },
@@ -135,7 +171,7 @@ export const TOOLS: Tool[] = [
     category: 'Woodworking' 
   },
   { 
-    id: 'miter-cut', 
+    id: 'finish-coverage', 
     name: 'Finish Coverage', 
     description: 'Paint & stain quantity estimator', 
     longDescription: 'Calculate the amount of finish needed for a woodworking project. Considers surface area, coverage rate of the product, and number of coats to estimate total gallons and material cost.',
@@ -144,7 +180,7 @@ export const TOOLS: Tool[] = [
     category: 'Woodworking' 
   },
   { 
-    id: 'screw-pilot', 
+    id: 'dovetail-angle', 
     name: 'Dovetail Angle', 
     description: 'Ratio & pitch reference', 
     longDescription: 'A guide for classic joinery layout. Select standard ratios for softwoods, hardwoods, or exotic dense woods to find the correct marking angle and understand the mechanical benefits of each.',
@@ -153,7 +189,7 @@ export const TOOLS: Tool[] = [
     category: 'Woodworking' 
   },
   { 
-    id: 'w4', 
+    id: 'shelf-sag', 
     name: 'Shelf Sag', 
     description: 'Sagulator load limit', 
     longDescription: 'Estimate the deflection of a bookshelf under load. Calculate whether your shelf design will sag noticeably based on wood species, span length, thickness, and total weight distribution.',
@@ -173,7 +209,7 @@ export const TOOLS: Tool[] = [
     category: 'Dev' 
   },
   { 
-    id: 'regex-tester', 
+    id: 'json-formatter', 
     name: 'JSON Formatter', 
     description: 'Format & validate JSON', 
     longDescription: 'A developer utility to beautify and validate JSON structures. Includes automatic indentation, syntax highlighting for keys and values, and descriptive error reporting for malformed data.',
@@ -182,7 +218,7 @@ export const TOOLS: Tool[] = [
     category: 'Dev' 
   },
   { 
-    id: 'jwt-decoder', 
+    id: 'regex-tester', 
     name: 'Regex Tester', 
     description: 'Pattern matching & capture', 
     longDescription: 'Test regular expressions against target strings in real-time. Features flag selection (g, i, m, s), inline match highlighting, and a detailed breakdown of all captured groups.',
@@ -191,7 +227,7 @@ export const TOOLS: Tool[] = [
     category: 'Dev' 
   },
   { 
-    id: 'crontab-guide', 
+    id: 'timestamp-converter', 
     name: 'Unix Timestamp', 
     description: 'Epoch time converter & reference', 
     longDescription: 'Convert between Unix epoch timestamps and human-readable dates. Features a live-updating system clock and supports multiple formats including UTC, Local, ISO 8601, and relative time.',
@@ -209,7 +245,7 @@ export const TOOLS: Tool[] = [
     category: 'Dev' 
   },
   { 
-    id: 'model-compare', 
+    id: 'base64-tool', 
     name: 'Base64 Tool', 
     description: 'String to Base64 converter', 
     longDescription: 'Bidirectional Base64 encoding utility. Quickly convert strings to Base64 data for binary-safe transmission or decode existing payloads with character count tracking and whitespace visualization.',
@@ -281,7 +317,7 @@ export const TOOLS: Tool[] = [
     category: 'AI/ML' 
   },
   { 
-    id: 'prompt-optimizer', 
+    id: 'prompt-cost', 
     name: 'Prompt Cost', 
     description: 'Estimate LLM API costs', 
     longDescription: 'Calculate the expected cost of an LLM request across different providers. Select latest models from OpenAI, Anthropic, or Google and input token counts to see per-request price estimates.',
@@ -290,7 +326,7 @@ export const TOOLS: Tool[] = [
     category: 'AI/ML' 
   },
   { 
-    id: 'embedding-view', 
+    id: 'context-window', 
     name: 'Context Windows', 
     description: 'LLM context limits compared', 
     longDescription: 'A comparative reference guide for LLM context window capacities. View a relative bar chart of popular model families and deep-dive into specific details for each provider.',
@@ -310,7 +346,7 @@ export const TOOLS: Tool[] = [
 
   // General
   { 
-    id: 'g1', 
+    id: 'unit-converter', 
     name: 'Unit Converter', 
     description: 'Length, Mass, Temp', 
     longDescription: 'Quick reference for common unit conversions. Easily switch between metric and imperial systems for distance, weight, and temperature with high-precision results.',
@@ -319,7 +355,7 @@ export const TOOLS: Tool[] = [
     category: 'General' 
   },
   { 
-    id: 'g2', 
+    id: 'level-tool', 
     name: 'Level Tool', 
     description: 'Surface inclination', 
     longDescription: 'Digital inclinometer for leveling tasks. Uses the device accelerometer (when available) or manual input to measure surface pitch and alignment for construction or framing.',
@@ -328,7 +364,7 @@ export const TOOLS: Tool[] = [
     category: 'General' 
   },
   { 
-    id: 'g3', 
+    id: 'stopwatch', 
     name: 'Stopwatch', 
     description: 'Precision timer', 
     longDescription: 'High-precision engineering stopwatch with lap tracking. Ideal for timing mechanical cycles, process workflows, or structural testing with millisecond accuracy.',
@@ -337,7 +373,7 @@ export const TOOLS: Tool[] = [
     category: 'General' 
   },
   { 
-    id: 'g4', 
+    id: 'flashlight', 
     name: 'Flashlight', 
     description: 'Screen white-out', 
     longDescription: 'Maximizes screen brightness and fills the display with pure white light. Useful as an emergency inspection lamp or for visual testing in dark environments.',
@@ -375,7 +411,7 @@ export const TOOLS: Tool[] = [
     category: 'Financial'
   },
   {
-    id: 'currency-convert',
+    id: 'currency-ref',
     name: 'Currency Reference',
     description: 'Approximate exchange rates',
     longDescription: 'A static reference table for major world currencies. Note that these rates are approximate for quick estimation and do not represent live market data.',
@@ -384,7 +420,7 @@ export const TOOLS: Tool[] = [
     category: 'Financial'
   },
   {
-    id: 'invoice-calc',
+    id: 'invoice-estimator',
     name: 'Invoice Estimator',
     description: 'Hourly rate billing',
     longDescription: 'Create professional billing estimates based on hourly rates. Automatically calculates taxes and discounts to provide a clean itemized preview for clients.',

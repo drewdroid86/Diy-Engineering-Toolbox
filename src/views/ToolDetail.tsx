@@ -31,6 +31,10 @@ import { ModelComparisonTable } from '../components/tools/ModelComparisonTable';
 import { UnitConverterTool } from '../components/tools/UnitConverterTool';
 import { RebarWeightTool } from '../components/tools/RebarWeightTool';
 import { FlowRateTool } from '../components/tools/FlowRateTool';
+import { BeamLoadTool } from '../components/tools/BeamLoadTool';
+import { PipeFrictionTool } from '../components/tools/PipeFrictionTool';
+import { AsphaltVolumeTool } from '../components/tools/AsphaltVolumeTool';
+import { SoilBearingTool } from '../components/tools/SoilBearingTool';
 import { ShelfSagTool } from '../components/tools/ShelfSagTool';
 import { LevelTool } from '../components/tools/LevelTool';
 import { StopwatchTool } from '../components/tools/StopwatchTool';
@@ -94,33 +98,45 @@ export const ToolDetail: React.FC<ToolDetailProps> = ({ tool, onClose }) => {
         return <TorqueCalculatorTool />;
       case 'gear-ratio':
         return <GearRatioTool />;
-      case 'pressure-calc':
+      case 'rpm-speed':
         return <RpmSpeedTool />;
-      case 'beam-deflection':
+      case 'spring-rate':
         return <SpringRateTool />;
-      case 'concrete-mix':
+      case 'concrete-calc':
         return <ConcreteCalcTool />;
       case 'slope-grade':
         return <SlopeGradeTool />;
+      case 'rebar-weight':
+        return <RebarWeightTool />;
+      case 'flow-rate':
+        return <FlowRateTool />;
+      case 'beam-load':
+        return <BeamLoadTool />;
+      case 'pipe-friction':
+        return <PipeFrictionTool />;
+      case 'asphalt-volume':
+        return <AsphaltVolumeTool />;
+      case 'soil-bearing':
+        return <SoilBearingTool />;
       case 'board-foot':
         return <BoardFootTool />;
-      case 'miter-cut':
+      case 'finish-coverage':
         return <FinishCoverageTool />;
-      case 'screw-pilot':
+      case 'dovetail-angle':
         return <DovetailAngleTool />;
-      case 'regex-tester':
+      case 'json-formatter':
         return <JsonFormatterTool />;
-      case 'jwt-decoder':
+      case 'regex-tester':
         return <RegexTesterTool />;
-      case 'crontab-guide':
+      case 'timestamp-converter':
         return <TimestampConverterTool />;
       case 'hash-generator':
         return <HashGeneratorTool />;
       case 'token-counter':
         return <TokenCounterTool />;
-      case 'prompt-optimizer':
+      case 'prompt-cost':
         return <PromptCostTool />;
-      case 'embedding-view':
+      case 'context-window':
         return <ContextWindowTool />;
       case 'model-comparison':
         return <ModelComparisonTable />;
@@ -130,9 +146,9 @@ export const ToolDetail: React.FC<ToolDetailProps> = ({ tool, onClose }) => {
         return <CompoundInterestTool />;
       case 'tip-calc':
         return <TipCalculatorTool />;
-      case 'currency-convert':
+      case 'currency-ref':
         return <CurrencyReferenceTool />;
-      case 'invoice-calc':
+      case 'invoice-estimator':
         return <InvoiceEstimatorTool />;
       case 'roi-calc':
         return <RoiCalculatorTool />;
@@ -140,7 +156,7 @@ export const ToolDetail: React.FC<ToolDetailProps> = ({ tool, onClose }) => {
         return <BudgetSplitterTool />;
       case 'break-even':
         return <BreakEvenTool />;
-      case 'model-compare':
+      case 'base64-tool':
         return <Base64Tool />;
       case 'url-encoder':
         return <UrlEncoderTool />;
@@ -166,19 +182,15 @@ export const ToolDetail: React.FC<ToolDetailProps> = ({ tool, onClose }) => {
         return <TextDiffTool />;
       case 'termux-ref':
         return <TermuxRefTool />;
-      case 'c3':
-        return <RebarWeightTool />;
-      case 'c4':
-        return <FlowRateTool />;
-      case 'w4':
+      case 'shelf-sag':
         return <ShelfSagTool />;
-      case 'g1':
+      case 'unit-converter':
         return <UnitConverterTool />;
-      case 'g2':
+      case 'level-tool':
         return <LevelTool />;
-      case 'g3':
+      case 'stopwatch':
         return <StopwatchTool />;
-      case 'g4':
+      case 'flashlight':
         return <FlashlightTool />;
       case 'gemini-assistant':
         return <GeminiAssistant />;

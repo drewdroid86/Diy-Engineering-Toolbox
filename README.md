@@ -1,16 +1,18 @@
 # DIY Engineering Toolbox
 
-A modern, high-performance React + Vite toolbox for common engineering calculations, featuring persistent storage and an integrated AI assistant.
+A modern, high-performance React + Vite toolbox for common engineering calculations, featuring persistent storage, live data integration, and an integrated AI assistant.
 
 ## Overview
 
-DIY Engineering Toolbox provides a suite of essential utilities for engineers, hobbyists, and makers in a polished, responsive single-page application.
+DIY Engineering Toolbox provides a comprehensive suite of essential utilities for engineers, hobbyists, and makers in a polished, responsive single-page application. Optimized for mobile use with a native-app feel.
 
 ### Key Tools
-- **Electrical:** Ohm's Law, Resistor Color Code, Voltage Divider, LED Resistor.
-- **Mechanical:** Torque Calculator, Gear Ratio.
-- **Civil:** Concrete Volume, Slope Calculator.
-- **General:** Unit Converter.
+- **Electrical:** Ohm's Law, Resistor Color Code, PWM Calculator, RC Charge Time, Wire Gauge.
+- **Mechanical:** Bolt Torque, Gear Ratio, RPM & Speed, Spring Rate.
+- **Civil (NEW):** Concrete Volume, Slope Grade, Rebar Weight, Flow Rate, **Beam Load**, **Pipe Friction**, **Asphalt Tonnage**, **Soil Bearing Capacity**.
+- **Financial (UPGRADED):** **Comprehensive Invoicing System**, Loan Calculator, Compound Interest, ROI, Break Even.
+- **Dev & Termux:** **Advanced Termux Cheatsheet**, JSON Formatter, Regex Tester, JWT Decoder, Unix Timestamp, chmod Calculator.
+- **General:** **Precision Level Tool (Inclinometer & Bubble)**, Unit Converter, Stopwatch, Flashlight.
 - **AI Assistant:** Gemini Engineering Assistant for complex formulas and material science.
 
 ### Tech Stack
@@ -20,15 +22,15 @@ DIY Engineering Toolbox provides a suite of essential utilities for engineers, h
 - **Animations:** Framer Motion
 - **Icons:** Lucide React
 - **AI:** Google Gemini SDK (@google/genai)
-- **Persistence:** LocalStorage with custom hooks
+- **Persistence:** LocalStorage with custom hooks & automatic data migration
 
-## Features
+## New Features (v1.1.0 "Upgrade Core")
 
-- **Categorized Browsing:** Quickly find tools via category pills (Electrical, Mechanical, etc.).
-- **Smart Search:** Instant filtering of tools by name or description.
-- **Pinned Tools:** Save your most-used calculators to the home screen for quick access.
-- **View-Based Navigation:** Clean separation between the Home dashboard, detailed Tool views, and Settings.
-- **Responsive Design:** Optimized for both mobile and desktop use with a modern "App-like" feel.
+- **Live Data Integration:** Fetch real-time currency exchange rates and LLM API pricing (supports Frankfurter and OpenRouter).
+- **Comprehensive Invoicing:** Manage clients, create itemized invoices, and export to PDF directly from the browser.
+- **Hardware-Grade Level Tool:** 3-axis sensor support with digital calibration for high-precision surface leveling.
+- **Termux Reference Guide:** Updated for Android 10-14+, including Phantom Process Killer fixes and PRoot/GUI installation guides.
+- **API Key Management:** Securely store your own API keys in Settings to enable premium live data features.
 
 ## Getting Started
 
@@ -58,7 +60,7 @@ Create a `.env` file in the project root and add your Gemini API key:
 VITE_GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-> **Note:** The AI Assistant requires a valid Google Gemini API key.
+> **Note:** The AI Assistant requires a valid Google Gemini API key. Additional API keys (OpenRouter, etc.) can be configured directly in the app's **Settings** page.
 
 ### Development
 
@@ -74,8 +76,9 @@ The app will be available at `http://localhost:3000`.
 
 ```text
 src/
-├── components/      # Reusable UI components (BottomNav, SearchBar, ToolCard, etc.)
-├── hooks/           # Custom React hooks (usePersistence for LocalStorage)
+├── components/      # Reusable UI components
+│   └── tools/       # 50+ Specialized Engineering Calculators
+├── hooks/           # Custom React hooks (usePersistence, useChat, etc.)
 ├── views/           # Main application views (Home, ToolDetail, Settings)
 ├── data.ts          # Centralized tool definitions and metadata
 ├── types.ts         # TypeScript interfaces and types
