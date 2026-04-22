@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, Send, User, Bot, Loader2, Sparkles, AlertCircle } from 'lucide-react';
-import { callGemini } from '../lib/gemini';
+import { Send, User, Bot, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { useChat } from '../hooks/useChat';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const GeminiAssistant = () => {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { messages, loading, error, sendMessage } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,26 +14,11 @@ export const GeminiAssistant = () => {
     }
   }, [messages, loading]);
 
-  const sendMessage = async () => {
+  const handleSend = async () => {
     if (!input.trim() || loading) return;
-    
-    const userMessage = { role: 'user', content: input };
-    const newMessages = [...messages, userMessage];
-    
-    setMessages(newMessages);
+    const currentInput = input;
     setInput('');
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const reply = await callGemini(newMessages);
-      setMessages([...newMessages, { role: 'model', content: reply }]);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred. Please check your API key.');
-      console.error('Chat error:', err);
-    } finally {
-      setLoading(false);
-    }
+    await sendMessage(currentInput);
   };
 
   return (
@@ -123,13 +106,13 @@ export const GeminiAssistant = () => {
             type="text" 
             value={input} 
             onChange={(e) => setInput(e.target.value)} 
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="How do I calculate..." 
             className="flex-1 bg-transparent py-2 text-white text-sm outline-none placeholder:text-gray-600"
             disabled={loading}
           />
           <button 
-            onClick={sendMessage} 
+            onClick={handleSend} 
             disabled={loading || !input.trim()}
             className={`p-2 rounded-xl transition-all ${
               loading || !input.trim() 

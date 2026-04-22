@@ -1,36 +1,54 @@
+import { GoogleGenAI } from '@google/genai';
+
+let genAI: GoogleGenAI | null = null;
+
+function getGenAI() {
+  if (genAI) return genAI;
+  
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (process.env.GEMINI_API_KEY as string);
+  
+  if (!apiKey) {
+    throw new Error('Gemini API key not found. Please set VITE_GEMINI_API_KEY in your .env file.');
+  }
+
+  genAI = new GoogleGenAI({ apiKey });
+  return genAI;
+}
+
 export async function callGemini(
   messages: { role: string; content: string }[],
-  systemPrompt?: string
+  systemPrompt: string = "You are a helpful engineering assistant."
 ): Promise<string> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error('Anthropic API key not found in environment variables (VITE_ANTHROPIC_API_KEY)');
+  try {
+    const ai = getGenAI();
+    
+    // Convert messages to Gemini format
+    const contents = messages.map(m => ({
+      role: m.role === 'model' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    }));
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents,
+      config: {
+        systemInstruction: systemPrompt,
+      }
+    });
+
+    if (!response.text) {
+      throw new Error('No response text received from Gemini.');
+    }
+
+    return response.text;
+  } catch (error: unknown) {
+    console.error('Gemini API error:', error);
+    if (error instanceof Error) {
+      if (error.message.includes('API_KEY_INVALID')) {
+        throw new Error('Invalid Gemini API key. Please check your configuration.');
+      }
+      throw error;
+    }
+    throw new Error('An unexpected error occurred during the Gemini API call.');
   }
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { 
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "dangerously-allow-browser": "true"
-    },
-    body: JSON.stringify({
-      model: "claude-3-5-sonnet-20240620", // Using the latest stable model ID
-      max_tokens: 1000,
-      system: systemPrompt || "You are a helpful engineering assistant.",
-      messages: messages.map(m => ({
-        role: m.role === 'model' ? 'assistant' : m.role,
-        content: m.content
-      }))
-    })
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error?.message || `Anthropic API error: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data.content[0].text || "No response received.";
 }

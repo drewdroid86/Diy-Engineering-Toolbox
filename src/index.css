@@ -4,6 +4,14 @@
   --color-bg-dark: #0f0f14;
   --color-card-dark: #1a1a24;
   --color-accent: #00e5ff;
+  --color-electrical: #f59e0b;
+  --color-mechanical: #6366f1;
+  --color-civil: #10b981;
+  --color-woodworking: #92400e;
+  --color-dev: #8b5cf6;
+  --color-ai-ml: #ec4899;
+  --color-financial: #059669;
+  --color-general: #3b82f6;
 }
 
 :root {

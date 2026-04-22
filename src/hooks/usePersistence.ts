@@ -13,7 +13,9 @@ export function usePersistence<T>(key: string, defaultValue: T): [T, Dispatch<Se
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {}
+    } catch {
+      // Ignore storage errors
+    }
   }, [key, value]);
 
   return [value, setValue];

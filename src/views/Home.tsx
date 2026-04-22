@@ -5,21 +5,20 @@ import { SearchBar } from '../components/SearchBar';
 import { CategoryPills } from '../components/CategoryPills';
 import { ToolCard } from '../components/ToolCard';
 import { usePersistence } from '../hooks/usePersistence';
-import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutGrid, List } from 'lucide-react';
 
 const CATEGORIES: Category[] = ['All', 'Electrical', 'Mechanical', 'Civil', 'Woodworking', 'Dev', 'AI/ML', 'Financial', 'General'];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  'Electrical': '#f59e0b',
-  'Mechanical': '#6366f1',
-  'Civil': '#10b981',
-  'Woodworking': '#92400e',
-  'Dev': '#8b5cf6',
-  'AI/ML': '#ec4899',
-  'Financial': '#059669',
-  'General': '#3b82f6',
-  'All': '#00e5ff'
+  'Electrical': 'var(--color-electrical)',
+  'Mechanical': 'var(--color-mechanical)',
+  'Civil': 'var(--color-civil)',
+  'Woodworking': 'var(--color-woodworking)',
+  'Dev': 'var(--color-dev)',
+  'AI/ML': 'var(--color-ai-ml)',
+  'Financial': 'var(--color-financial)',
+  'General': 'var(--color-general)',
+  'All': 'var(--color-accent)'
 };
 
 interface HomeProps {
