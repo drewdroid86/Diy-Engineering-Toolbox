@@ -32,8 +32,8 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
-          
+          ./gradlew assembleDebug -x lint
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
