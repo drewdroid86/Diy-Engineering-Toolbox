@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Engineering Toolbox</string>
+    <string name="title_activity_main">Engineering Toolbox</string>
+    <string name="package_name">com.engineering.toolbox</string>
+    <string name="custom_url_scheme">com.engineering.toolbox</string>
+</resources>
