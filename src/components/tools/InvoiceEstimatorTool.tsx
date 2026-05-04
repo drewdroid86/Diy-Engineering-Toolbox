@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePersistence } from '../../hooks/usePersistence';
 import { 
@@ -36,6 +36,13 @@ export const InvoiceEstimatorTool = () => {
   const [clients, setClients] = usePersistence<Client[]>('saved_clients', []);
   const [view, setView] = useState<'list' | 'create' | 'view'>('list');
   const [activeInvoice, setActiveInvoice] = useState<Invoice | null>(null);
+
+  const clientMap = useMemo(() => {
+    return clients.reduce((acc, client) => {
+      acc[client.id] = client;
+      return acc;
+    }, {} as Record<string, Client>);
+  }, [clients]);
 
   // New Invoice State
   const [newInvoice, setNewInvoice] = useState<Partial<Invoice>>({
@@ -113,7 +120,7 @@ export const InvoiceEstimatorTool = () => {
                       </div>
                       <div>
                         <p className="text-xs font-black text-white">{inv.number}</p>
-                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">{clients.find(c => c.id === inv.clientId)?.name || 'Unknown Client'}</p>
+                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">{clientMap[inv.clientId]?.name || 'Unknown Client'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -304,7 +311,7 @@ export const InvoiceEstimatorTool = () => {
               <div className="grid grid-cols-2 gap-8">
                 <div>
                   <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Bill To</p>
-                  <p className="font-black text-sm">{clients.find(c => c.id === activeInvoice.clientId)?.name}</p>
+                  <p className="font-black text-sm">{clientMap[activeInvoice.clientId]?.name || 'Unknown Client'}</p>
                   <p className="text-xs text-gray-500 mt-1">Client Contact Details</p>
                 </div>
                 <div>
