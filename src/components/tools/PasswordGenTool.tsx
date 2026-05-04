@@ -14,9 +14,11 @@ export const PasswordGenTool = () => {
     if (useNumbers) charset += "0123456789";
     if (useSymbols) charset += "!@#$%^&*()_+~`|}{[]:;?><,./-=";
     
+    const array = new Uint32Array(length);
+    window.crypto.getRandomValues(array);
     let res = "";
     for (let i = 0; i < length; i++) {
-      res += charset.charAt(Math.floor(Math.random() * charset.length));
+      res += charset.charAt(array[i] % charset.length);
     }
     return res;
   }, [length, useUpper, useNumbers, useSymbols, seed]);
